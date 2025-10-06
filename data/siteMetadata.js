@@ -11,7 +11,7 @@ const siteMetadata = {
 	siteContentRepo: 'https://github.com/roitium/blog-content',
 	email: 'me@roitium.com',
 	github: 'https://github.com/roitium',
- x: "https://x.com/yoshino_2333"
+ x: "https://x.com/yoshino_2333",
 	locale: 'zh-CN',
 	stickyNav: false,
 	comments: {
