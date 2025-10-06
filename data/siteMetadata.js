@@ -7,10 +7,11 @@ const siteMetadata = {
 	language: 'zh-cn',
 	theme: 'light', // system, dark or light
 	siteUrl: 'https://www.roitium.com',
-	siteRepo: 'https://github.com/yanyao2333/blog-main',
-	siteContentRepo: 'https://github.com/yanyao2333/blog-content',
+	siteRepo: 'https://github.com/roitium/blog-main',
+	siteContentRepo: 'https://github.com/roitium/blog-content',
 	email: 'me@roitium.com',
-	github: 'https://github.com/yanyao2333',
+	github: 'https://github.com/roitium',
+ x: "https://x.com/yoshino_2333"
 	locale: 'zh-CN',
 	stickyNav: false,
 	comments: {
