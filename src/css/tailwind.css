@@ -130,6 +130,7 @@
 /* 留出导航栏的间隔 */
 html {
 	scroll-padding-top: 80px;
+	text-autospace: normal;
 }
 
 /* add fade in & out to ViewTransition on page*/
