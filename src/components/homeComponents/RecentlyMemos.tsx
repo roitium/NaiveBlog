@@ -2,26 +2,23 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import type { Memo, MemoListResponse } from '@/types/memos'
+import type { ApiMemo, TimelineResponse, ApiResponse } from '@/types/memos'
 import { formatToSemanticTime } from '@/utils/time'
 
 async function fetchMemos() {
-	if (!process.env.NEXT_PUBLIC_MEMOS_ENDPOINT) {
-		return []
-	}
-	const apiEndpoint = process.env.NEXT_PUBLIC_MEMOS_ENDPOINT?.replace(/\/$/, '')
-	const filter = `filter=creator=='users/1'`
-	const pageSize = 'pageSize=5'
-	const apiPath = 'api/v1/memos'
 	const response = await fetch(
-		`${apiEndpoint}/${apiPath}?${filter}&${pageSize}`,
+		`https://nodal.roitium.com/api/v1/timeline?limit=5&username=roitium`,
 	)
-	const jsonResp: MemoListResponse = await response.json()
-	return jsonResp.memos
+	const jsonResp: ApiResponse<TimelineResponse> = await response.json()
+	if (jsonResp.data === null) {
+		toast.error('获取 memos 时发生错误！')
+		return false
+	}
+	return jsonResp.data.data
 }
 
 export default function RecentlyMemos() {
-	const [memos, setMemos] = useState<Memo[]>([])
+	const [memos, setMemos] = useState<ApiMemo[]>([])
 	const [isBottom, setIsBottom] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
 	const scrollRef = useRef(null)
@@ -82,14 +79,14 @@ export default function RecentlyMemos() {
 						<li className='h-2' />
 						{memos.map((memo) => (
 							<li
-								key={memo.uid}
+								key={memo.id}
 								className='ms-6 mb-10'
 							>
 								{/* 偏移 7px（半径加 border-s） */}
 								<div className='-start-[7px] absolute mt-2 flex h-3 w-3 items-center justify-center rounded-full border-2 border-blue-7 bg-slate-2 dark:border-skydark-7 dark:bg-slatedark-2' />
 								<div className='mr-2 flex flex-col justify-between rounded-lg bg-slate-3 p-4 shadow-xs ring-1 ring-slate-7/50 dark:bg-slatedark-3 dark:ring-slatedark-7/50'>
 									<time className='mb-2 self-start font-normal text-slate-11 text-xs dark:text-slatedark-11'>
-										{formatToSemanticTime(memo.createTime, navigator.language)}
+										{formatToSemanticTime(memo.createdAt, navigator.language)}
 									</time>
 									<article className='prose prose-slate dark:prose-invert whitespace-pre-wrap font-normal text-sm'>
 										{memo.content}
