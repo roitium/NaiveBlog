@@ -19,7 +19,7 @@ export const MemoRowComponent = memo(function MemoRowComponent({
 	memo: ApiMemo
 }) {
 	const [showComments, setShowComments] = useState(false)
-	const [comments, setComments] = useState<ApiMemo[]>([])
+	const [comments, setComments] = useState<ApiMemo['replies']>([])
 	const [isLoadingComments, setIsLoadingComments] = useState(false)
 
 	const memoizedImage = useMemo(

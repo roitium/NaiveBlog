@@ -50,7 +50,7 @@ export interface ApiMemo {
   createdAt: string;
   author: User;
   resources: Resource[];
-  replies: ApiMemo[];
+  replies: (Exclude<ApiMemo, "replies"> & {subReplyCount: number})[];
   quotedMemo: ApiQuotedMemo | null;
   updatedAt: string;
   parentId: string | null;

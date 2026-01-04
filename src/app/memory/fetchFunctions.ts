@@ -17,7 +17,7 @@ export async function fetchComments(memoName: string) {
 		toast.error('获取评论失败')
 		return []
 	}
-	const comments: ApiMemo[] = jsonResp.data.replies
+	const comments = jsonResp.data.replies
 
 	// 处理评论内容
 	return await Promise.all(

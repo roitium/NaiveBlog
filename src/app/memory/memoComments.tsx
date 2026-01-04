@@ -16,11 +16,11 @@ const CommentComponent = memo(function CommentComponent({
 	comment,
 	level = 0,
 }: {
-	comment: ApiMemo
+	comment: ApiMemo['replies'][0]
 	level?: number
 }) {
 	const [showComments, setShowComments] = useState(false)
-	const [comments, setComments] = useState<ApiMemo[]>([])
+	const [comments, setComments] = useState<ApiMemo['replies']>([])
 	const [isLoadingComments, setIsLoadingComments] = useState(false)
 
 	const handleCommentClick = async (memoOrCommentId: string) => {
@@ -62,8 +62,7 @@ const CommentComponent = memo(function CommentComponent({
 						</span>
 					</div>
 				</div>
-				{/* 这里使用 1 来判断是否有子评论，因为对于一条评论，始终会有一条 relation 指向自己的父 memo */}
-				{comment.replies.length > 1 && (
+				{comment.subReplyCount > 1 && (
 					<div className='ml-auto'>
 						<button
 							onClick={() => handleCommentClick(comment.id.toString())}
@@ -84,7 +83,7 @@ const CommentComponent = memo(function CommentComponent({
 								/>
 							</svg>
 							<span className='align-middle'>
-								{comment.replies.length - 1}
+								{comment.subReplyCount}
 							</span>
 						</button>
 					</div>
@@ -158,7 +157,7 @@ export const CommentsList = memo(function CommentsList({
 	comments,
 	level = 0,
 }: {
-	comments: ApiMemo[]
+	comments: ApiMemo['replies']
 	level?: number
 	onCommentClick: (commentId: string) => void
 }) {
