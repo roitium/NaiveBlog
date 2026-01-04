@@ -42,7 +42,7 @@ export async function fetchComments(memoName: string) {
  */
 export async function fetchMemos() {
 	const response = await fetch(
-		`https://nodal.roitium.com/api/v1/timeline?limit=20&username=roitium`, // 前端掩耳盗铃行为，有点难绷了
+		`https://nodal.roitium.com/api/v1/memos/timeline?limit=20&username=roitium`, // 前端掩耳盗铃行为，有点难绷了
 	)
 	if (!response.ok) {
 		toast.error('获取 memos 时发生错误！')

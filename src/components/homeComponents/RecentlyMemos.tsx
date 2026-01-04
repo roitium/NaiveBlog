@@ -7,7 +7,7 @@ import { formatToSemanticTime } from '@/utils/time'
 
 async function fetchMemos() {
 	const response = await fetch(
-		`https://nodal.roitium.com/api/v1/timeline?limit=5&username=roitium`,
+		`https://nodal.roitium.com/api/v1/memos/timeline?limit=5&username=roitium`,
 	)
 	const jsonResp: ApiResponse<TimelineResponse> = await response.json()
 	if (jsonResp.data === null) {

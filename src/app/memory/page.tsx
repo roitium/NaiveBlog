@@ -97,17 +97,6 @@ export default function MemosPage() {
 		() => (
 			<>
 				<p>人生三大乐事：梗图、发癫与暴论</p>
-				<Link
-					className='text-slate-11 text-sm hover:text-blue-11 dark:text-slatedark-11'
-					href={
-						process.env.NEXT_PUBLIC_MEMOS_ENDPOINT
-							? process.env.NEXT_PUBLIC_MEMOS_ENDPOINT
-							: '#'
-					}
-				>
-					访问 Memos 网页 &nbsp;
-					<ArrowUpRightFromCircle className='inline size-3' />
-				</Link>
 			</>
 		),
 		[],
