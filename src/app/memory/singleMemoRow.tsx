@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { memo, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import Logo from '@/public/static/images/logo.png'
-import type { Memo } from '@/types/memos'
+import type { ApiMemo } from '@/types/memos'
 import { formatToSemanticTime } from '@/utils/time'
 import { fetchComments } from './fetchFunctions'
 import { CommentsList } from './memoComments'
@@ -16,10 +16,10 @@ import { CommentsList } from './memoComments'
 export const MemoRowComponent = memo(function MemoRowComponent({
 	memo,
 }: {
-	memo: Memo
+	memo: ApiMemo
 }) {
 	const [showComments, setShowComments] = useState(false)
-	const [comments, setComments] = useState<Memo[]>([])
+	const [comments, setComments] = useState<ApiMemo[]>([])
 	const [isLoadingComments, setIsLoadingComments] = useState(false)
 
 	const memoizedImage = useMemo(
@@ -61,13 +61,13 @@ export const MemoRowComponent = memo(function MemoRowComponent({
 						Roitium.
 					</span>
 					<span className='text-slate-11 text-xs dark:text-slatedark-11'>
-						{formatToSemanticTime(memo.createTime, navigator.language)}
+						{formatToSemanticTime(memo.createdAt, navigator.language)}
 					</span>
 				</div>
-				{memo.relations.length > 0 ? (
+				{memo.replies.length > 0 ? (
 					<div className='ml-auto flex gap-3'>
 						<button
-							onClick={() => handleCommentClick(memo.name)}
+							onClick={() => handleCommentClick(memo.id)}
 							className='inline-block self-center align-middle transition hover:opacity-30'
 						>
 							<svg
@@ -84,25 +84,25 @@ export const MemoRowComponent = memo(function MemoRowComponent({
 									d='M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z'
 								/>
 							</svg>
-							<span className='align-middle'>{memo.relations.length}</span>
+							<span className='align-middle'>{memo.replies.length}</span>
 						</button>
 						<div className='ml-auto select-none self-center text-base'>
-							{memo.pinned ? '📌' : null}
+							{memo.isPinned ? '📌' : null}
 						</div>
 					</div>
 				) : (
 					<div className='ml-auto select-none self-center text-base'>
-						{memo.pinned ? '📌' : null}
+						{memo.isPinned ? '📌' : null}
 					</div>
 				)}
 			</div>
 			{/* 内容框 */}
 			<div className='prose prose-slate dark:prose-invert prose-p:my-2 ml-[52px] rounded-e-lg rounded-bl-lg bg-slate-3 pr-2 pl-2 text-slate-12 shadow-xs ring-1 ring-slate-7/50 dark:bg-slatedark-3 dark:text-slatedark-12 dark:ring-slatedark-7/50'>
-				{memo.parsedContent ? (
+				{memo.content ? (
 					<article
 						className='break-words'
 						// biome-ignore lint/security/noDangerouslySetInnerHtml: ignore it
-						dangerouslySetInnerHTML={{ __html: memo.parsedContent }}
+						dangerouslySetInnerHTML={{ __html: memo.content }}
 					/>
 				) : (
 					''
@@ -115,15 +115,17 @@ export const MemoRowComponent = memo(function MemoRowComponent({
 						licenseKey={process.env.NEXT_PUBLIC_LIGHT_GALLERY_LICENSE_KEY}
 					>
 						{memo.resources.map((resource) => {
-							const imgUrl = `${process.env.NEXT_PUBLIC_MEMOS_ENDPOINT}/file/${resource.name}/${resource.filename}`
+							if (!resource.externalLink) {
+								return null
+							}
 							return (
 								<a
-									href={imgUrl}
-									key={resource.name}
+									href={resource.externalLink}
+									key={resource.filename}
 								>
 									<img
 										alt={resource.filename}
-										src={`${imgUrl}?thumbnail=true`}
+										src={resource.externalLink}
 										height={128}
 										width={128}
 										className='h-36 w-36 rounded-xl border object-cover shadow-xs hover:shadow-xl'

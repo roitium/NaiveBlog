@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { memo, useState } from 'react'
 import { toast } from 'sonner'
 import Logo from '@/public/static/images/logo.png'
-import type { Memo } from '@/types/memos'
+import type { ApiMemo } from '@/types/memos'
 import { formatToSemanticTime } from '@/utils/time'
 import { fetchComments } from './fetchFunctions'
 
@@ -16,11 +16,11 @@ const CommentComponent = memo(function CommentComponent({
 	comment,
 	level = 0,
 }: {
-	comment: Memo
+	comment: ApiMemo
 	level?: number
 }) {
 	const [showComments, setShowComments] = useState(false)
-	const [comments, setComments] = useState<Memo[]>([])
+	const [comments, setComments] = useState<ApiMemo[]>([])
 	const [isLoadingComments, setIsLoadingComments] = useState(false)
 
 	const handleCommentClick = async (memoOrCommentId: string) => {
@@ -58,15 +58,15 @@ const CommentComponent = memo(function CommentComponent({
 					<div className='flex flex-col'>
 						<span className='font-medium'>Roitium.</span>
 						<span className='text-slate-11 text-xs dark:text-slatedark-11'>
-							{formatToSemanticTime(comment.createTime, navigator.language)}
+							{formatToSemanticTime(comment.createdAt, navigator.language)}
 						</span>
 					</div>
 				</div>
 				{/* 这里使用 1 来判断是否有子评论，因为对于一条评论，始终会有一条 relation 指向自己的父 memo */}
-				{comment.relations.length > 1 && (
+				{comment.replies.length > 1 && (
 					<div className='ml-auto'>
 						<button
-							onClick={() => handleCommentClick(comment.name.toString())}
+							onClick={() => handleCommentClick(comment.id.toString())}
 							className='inline-block self-center align-middle transition hover:opacity-30'
 						>
 							<svg
@@ -84,18 +84,18 @@ const CommentComponent = memo(function CommentComponent({
 								/>
 							</svg>
 							<span className='align-middle'>
-								{comment.relations.length - 1}
+								{comment.replies.length - 1}
 							</span>
 						</button>
 					</div>
 				)}
 			</div>
 			<div className='prose prose-slate dark:prose-invert prose-p:my-2 ml-[47px] rounded-e-lg rounded-bl-lg bg-slate-3 pr-2 pl-2 text-slate-12 shadow-xs ring-1 ring-slate-7/50 dark:bg-slatedark-3 dark:text-slatedark-12 dark:ring-slatedark-7/50'>
-				{comment.parsedContent ? (
+				{comment.content ? (
 					<article
 						className='break-words'
 						// biome-ignore lint/security/noDangerouslySetInnerHtml: ignore it
-						dangerouslySetInnerHTML={{ __html: comment.parsedContent }}
+						dangerouslySetInnerHTML={{ __html: comment.content }}
 					/>
 				) : (
 					''
@@ -108,15 +108,17 @@ const CommentComponent = memo(function CommentComponent({
 						licenseKey={process.env.NEXT_PUBLIC_LIGHT_GALLERY_LICENSE_KEY}
 					>
 						{comment.resources.map((resource) => {
-							const imgUrl = `${process.env.NEXT_PUBLIC_MEMOS_ENDPOINT}/file/${resource.name}/${resource.filename}`
+							if (!resource.externalLink) {
+								return null
+							}
 							return (
 								<a
-									href={imgUrl}
-									key={resource.name}
+									href={resource.externalLink}
+									key={resource.filename}
 								>
 									<img
 										alt={resource.filename}
-										src={`${imgUrl}?thumbnail=true`}
+										src={resource.externalLink}
 										height={128}
 										width={128}
 										className='h-36 w-36 rounded-xl border object-cover shadow-xs hover:shadow-xl'
@@ -156,7 +158,7 @@ export const CommentsList = memo(function CommentsList({
 	comments,
 	level = 0,
 }: {
-	comments: Memo[]
+	comments: ApiMemo[]
 	level?: number
 	onCommentClick: (commentId: string) => void
 }) {
@@ -164,7 +166,7 @@ export const CommentsList = memo(function CommentsList({
 		<div className='flex flex-col gap-4'>
 			{comments.map((comment) => (
 				<CommentComponent
-					key={comment.uid}
+					key={comment.id}
 					comment={comment}
 					level={level}
 				/>

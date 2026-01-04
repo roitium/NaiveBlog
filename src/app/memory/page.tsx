@@ -1,7 +1,7 @@
 'use client'
 import clsx from 'clsx'
 import PageTitle from '@/components/PageTitle'
-import type { Memo } from '@/types/memos'
+import type { ApiMemo } from '@/types/memos'
 import 'lightgallery/css/lg-thumbnail.css'
 import 'lightgallery/css/lg-zoom.css'
 import 'lightgallery/css/lightgallery.css'
@@ -9,7 +9,7 @@ import { ArrowUpRightFromCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { clearNextPageToken, fetchMemos } from './fetchFunctions'
+import { fetchMemos } from './fetchFunctions'
 import { MemoRowComponent } from './singleMemoRow'
 
 const DISABLE_LOAD_MORE = true // 是否禁用加载更多功能
@@ -22,7 +22,7 @@ export default function MemosPage() {
 	const [isLoading, setIsLoading] = useState<boolean>(true)
 	// 是否是初次加载
 	const [hasLoaded, setHasLoaded] = useState(false)
-	const [memos, setMemos] = useState<Memo[]>([])
+	const [memos, setMemos] = useState<ApiMemo[]>([])
 	const loadMoreRef = useRef<HTMLDivElement>(null)
 
 	// 初始化Memos列表
@@ -93,13 +93,6 @@ export default function MemosPage() {
 		})
 	}
 
-	// 清除nextPageToken
-	useEffect(() => {
-		return () => {
-			clearNextPageToken()
-		}
-	}, [])
-
 	const subtitle = useMemo(
 		() => (
 			<>
@@ -140,7 +133,7 @@ export default function MemosPage() {
 					? memos.map((memo) => (
 							<MemoRowComponent
 								memo={memo}
-								key={memo.name}
+								key={memo.id}
 							/>
 						))
 					: null}
