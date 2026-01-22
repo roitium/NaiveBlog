@@ -242,7 +242,7 @@ importers:
         version: 0.2.2(@content-collections/core@0.11.1(typescript@5.9.2))(acorn@8.15.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@content-collections/next':
         specifier: ^0.2.6
-        version: 0.2.7(@content-collections/core@0.11.1(typescript@5.9.2))(next@15.4.10(@babel/core@7.27.4)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
+        version: 0.2.10(@content-collections/core@0.11.1(typescript@5.9.2))(next@15.4.10(@babel/core@7.27.4)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@svgr/webpack':
         specifier: ^8.1.0
         version: 8.1.0(typescript@5.9.2)
@@ -955,6 +955,11 @@ packages:
     peerDependencies:
       '@content-collections/core': 0.x
 
+  '@content-collections/integrations@0.4.0':
+    resolution: {integrity: sha512-ZNOoB61BlsfyJRno/Fc+eziKETN5O+40bJxhiwU6gMUC9bOGtN9TPOdHJH27wD9nUNL+F/H4R+dyDNoTJ4Y1/A==}
+    peerDependencies:
+      '@content-collections/core': 0.x
+
   '@content-collections/mdx@0.2.2':
     resolution: {integrity: sha512-7Xx8AohrSuq1jn/k44qWIq1s666KnksGPk64nnoY/T9mFZ7fZkdEtYezBsNpzkDMMKTnf65CNIvyFHtwTD2muA==}
     peerDependencies:
@@ -962,11 +967,11 @@ packages:
       react: '>= 18'
       react-dom: '>= 18'
 
-  '@content-collections/next@0.2.7':
-    resolution: {integrity: sha512-9IOyOgMrubACDw5ZQ4a2e68MoH+gvKv1J0H2Jbe2wcDqiuXvr4rIznPAYG/jRJLqKoT8PN2FrbrjeVt7cEbxTQ==}
+  '@content-collections/next@0.2.10':
+    resolution: {integrity: sha512-5vTqZwPkrpKfBDSUC76KCQhjf6o1n+CxA01VLESVo9oNThyGSH3NO1kynWWWXKVgel39Iybj7cn9KElkullnsA==}
     peerDependencies:
       '@content-collections/core': 0.x
-      next: ^12 || ^13 || ^14 || ^15
+      next: ^12 || ^13 || ^14 || ^15 || ^16
 
   '@csstools/color-helpers@5.0.2':
     resolution: {integrity: sha512-JqWH1vsgdGcw2RR6VliXXdA0/59LttzlU8UlRT/iUUsEeWfYq8I+K0yhihEUTTHLRm1EXvpsCx3083EU15ecsA==}
@@ -5628,7 +5633,7 @@ snapshots:
 
   '@babel/helper-annotate-as-pure@7.27.3':
     dependencies:
-      '@babel/types': 7.28.6
+      '@babel/types': 7.28.2
 
   '@babel/helper-compilation-targets@7.27.2':
     dependencies:
@@ -6453,6 +6458,10 @@ snapshots:
     dependencies:
       '@content-collections/core': 0.11.1(typescript@5.9.2)
 
+  '@content-collections/integrations@0.4.0(@content-collections/core@0.11.1(typescript@5.9.2))':
+    dependencies:
+      '@content-collections/core': 0.11.1(typescript@5.9.2)
+
   '@content-collections/mdx@0.2.2(@content-collections/core@0.11.1(typescript@5.9.2))(acorn@8.15.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@content-collections/core': 0.11.1(typescript@5.9.2)
@@ -6465,10 +6474,10 @@ snapshots:
       - acorn
       - supports-color
 
-  '@content-collections/next@0.2.7(@content-collections/core@0.11.1(typescript@5.9.2))(next@15.4.10(@babel/core@7.27.4)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
+  '@content-collections/next@0.2.10(@content-collections/core@0.11.1(typescript@5.9.2))(next@15.4.10(@babel/core@7.27.4)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
     dependencies:
       '@content-collections/core': 0.11.1(typescript@5.9.2)
-      '@content-collections/integrations': 0.3.0(@content-collections/core@0.11.1(typescript@5.9.2))
+      '@content-collections/integrations': 0.4.0(@content-collections/core@0.11.1(typescript@5.9.2))
       next: 15.4.10(@babel/core@7.27.4)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   '@csstools/color-helpers@5.0.2': {}
