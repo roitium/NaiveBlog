@@ -2,7 +2,7 @@
 
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
+// import { toast } from 'sonner'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 
 enum StatusCode {
@@ -10,6 +10,7 @@ enum StatusCode {
 	Offline = 2,
 }
 
+/*
 let reconnectFrequencySeconds = 1
 let evtSource: EventSource
 
@@ -23,6 +24,7 @@ function reconnectFunc(url: string, setStatus: SetStatus) {
 		reconnectFrequencySeconds = 64
 	}
 }
+*/
 
 interface Status {
 	status: string
@@ -32,6 +34,7 @@ interface Status {
 	status_code: StatusCode
 }
 
+/*
 type SetStatus = React.Dispatch<React.SetStateAction<Status>>
 
 function setupEventSource(url: string, setStatus: SetStatus) {
@@ -51,17 +54,20 @@ function setupEventSource(url: string, setStatus: SetStatus) {
 		reconnectFunc(url, setStatus)
 	}
 }
+*/
 
 export default function MyStatus() {
-	const [status, setStatus] = useState<Status>({
-		message: '连接中',
-		status: 'loading',
-		software: 'loading',
-		timestamp: 'loading',
+	const [status] = useState<Status>({
+		message: '该功能暂时关闭',
+		status: 'disabled',
+		software: 'disabled',
+		timestamp: 'disabled',
 		status_code: StatusCode.Offline,
 	})
 
 	useEffect(() => {
+		// 功能暂时关闭，不发送 sse 网络请求
+		/*
 		if (!process.env.NEXT_PUBLIC_STATUS_EVENT_SOURCE) {
 			return
 		}
@@ -69,6 +75,7 @@ export default function MyStatus() {
 		return () => {
 			evtSource.close()
 		}
+		*/
 	}, [])
 
 	return (
@@ -87,7 +94,7 @@ export default function MyStatus() {
 				side='bottom'
 				className='TooltipContent mt-2 whitespace-pre-line bg-slate-3 text-center text-slate-12 ring-1 ring-slate-7 dark:bg-slatedark-3 dark:text-slatedark-12 dark:ring-slatedark-7'
 			>
-				{status.message.replace(/\\n/g, '\n')}
+				该功能暂时关闭
 			</TooltipContent>
 		</Tooltip>
 	)
