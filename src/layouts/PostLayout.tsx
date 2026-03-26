@@ -75,26 +75,15 @@ export default function PostLayout({
 		<>
 			<ScrollTopAndComment toc={toc} />
 			<article>
-				<div className='mx-auto'>
-					{/* 文章头部 */}
-					<PostHeader
-						date={date}
-						title={title}
-						pinned={pinned}
-						readingTime={content.readingTime}
-					/>
-
+				<div className='mx-auto px-4 sm:px-6 xl:px-0'>
 					<div className='flex flex-col lg:flex-row'>
-						{/* 作者信息（移动端显示在顶部） */}
-						<div className='order-1 lg:hidden'>
-							<AuthorSection authorDetails={authorDetails} />
-						</div>
-						{/* 左侧边栏（桌面端） */}
-						<div className='hidden lg:order-1 lg:block lg:pl-6'>
-							<aside className='sticky top-20 hidden pl-5 lg:block lg:max-w-[220px]'>
-								{/* 作者信息 */}
+						{/* 左侧边栏（桌面端）及作者信息（移动端） */}
+						<div className='order-1 lg:block lg:pl-6 xl:pl-8 lg:w-[220px] 2xl:w-[280px] shrink-0'>
+							<div className='lg:hidden'>
 								<AuthorSection authorDetails={authorDetails} />
-								{/* 文章导航 */}
+							</div>
+							<aside className='sticky top-20 hidden lg:block'>
+								<AuthorSection authorDetails={authorDetails} />
 								<PostNavigation
 									categories={categories}
 									tags={tags}
@@ -107,9 +96,17 @@ export default function PostLayout({
 						</div>
 
 						{/* 主内容区域 */}
-						<div className='order-1 divide-y divide-slate-5 lg:order-2 lg:flex-1 dark:divide-slatedark-5'>
+						<div className='order-2 divide-y divide-slate-5 lg:flex-1 dark:divide-slatedark-5 lg:px-8 xl:px-12 2xl:px-16 min-w-0'>
+							{/* 文章头部 */}
+							<PostHeader
+								date={date}
+								title={title}
+								pinned={pinned}
+								readingTime={content.readingTime}
+							/>
+
 							{/* 文章内容 */}
-							<div className='prose prose-slate dark:prose-invert mx-auto pt-10 pb-8'>
+							<div className='prose prose-slate dark:prose-invert max-w-none pt-10 pb-8'>
 								{children}
 							</div>
 
@@ -132,13 +129,13 @@ export default function PostLayout({
 						</div>
 
 						{/* 目录 - 右侧边栏（仅桌面显示） */}
-						<div className='hidden lg:order-3 lg:block lg:w-1/5 lg:min-w-[200px] lg:pl-6'>
+						<div className='hidden lg:order-3 lg:block lg:w-[240px] xl:w-[280px] shrink-0 lg:pr-6 xl:pr-8'>
 							<TableOfContents toc={toc} />
 						</div>
 					</div>
 
 					{/* 导航区域（移动端显示在底部） */}
-					<div className='order-3 mt-8 lg:hidden'>
+					<div className='mt-8 lg:hidden'>
 						<PostNavigation
 							categories={categories}
 							tags={tags}
@@ -330,13 +327,15 @@ function PostNavigation({ categories, tags, next, prev, basePath, _slug }) {
 // 目录组件
 function TableOfContents({ toc }) {
 	return (
-		<div className='prose dark:prose-invert sticky top-20 pt-10 text-sm'>
-			{toc ? (
-				<h2 className='not-prose ml-5 pb-2 text-lg text-slate-11 uppercase tracking-wide dark:text-slatedark-11'>
-					TOC
-				</h2>
-			) : null}
-			<TOCInline toc={toc} />
+		<div className='prose dark:prose-invert sticky top-0 text-sm h-screen overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
+			<div className='pt-20 pb-8'>
+				{toc ? (
+					<h2 className='not-prose ml-5 pb-2 text-lg text-slate-11 uppercase tracking-wide dark:text-slatedark-11'>
+						TOC
+					</h2>
+				) : null}
+				<TOCInline toc={toc} />
+			</div>
 		</div>
 	)
 }

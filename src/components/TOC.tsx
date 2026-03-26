@@ -120,6 +120,27 @@ const TOCInline = ({
 		}
 	}, [toc])
 
+	useEffect(() => {
+		if (activeId) {
+			const tocItem = document.getElementById(`toc-item-${activeId}`)
+			if (tocItem) {
+				// 找到最近的滚动父元素
+				let parent = tocItem.parentElement
+				while (parent && parent !== document.body) {
+					const overflowY = window.getComputedStyle(parent).overflowY
+					if (overflowY === 'auto' || overflowY === 'scroll') {
+						const parentRect = parent.getBoundingClientRect()
+						const targetRect = tocItem.getBoundingClientRect()
+						const offset = targetRect.top - parentRect.top - parent.clientHeight / 2 + tocItem.clientHeight / 2
+						parent.scrollBy({ top: offset, behavior: 'smooth' })
+						break
+					}
+					parent = parent.parentElement
+				}
+			}
+		}
+	}, [activeId])
+
 	// 在 Hooks 调用之后处理早期返回
 	if (!toc) {
 		return null
@@ -151,8 +172,9 @@ const TOCInline = ({
 	const handleItemClick = (id: string) => {
 		clickedId.current = id
 		setActiveId(id)
+		
 		// eslint-disable-next-line react-compiler/react-compiler
-		window.location.hash = `#${activeId}`
+		window.location.hash = `#${id}`
 		const targetElement = document.getElementById(id)
 		if (targetElement) {
 			targetElement.scrollIntoView({
@@ -177,6 +199,7 @@ const TOCInline = ({
 				{items.map((item, index) => (
 					<li key={`${item.url}_${index}`}>
 						<a
+							id={`toc-item-${item.url.slice(1)}`}
 							className={`underline-offset-2 ${
 								activeId === item.url.slice(1)
 									? 'font-semibold text-blue-11 dark:text-skydark-11'
