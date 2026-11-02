@@ -9,7 +9,11 @@ const posts = defineCollection({
 		generateId: ({ entry }) => entry.replace(/\.(md|mdx)$/, ''),
 	}),
 	schema: z.object({
-		title: z.string(),
+		// YAML parses unquoted date titles as Date objects in existing posts.
+		title: z.union([
+			z.string(),
+			z.date().transform((date) => date.toISOString().slice(0, 10)),
+		]),
 		date: z.coerce.date(),
 		tags: z.array(z.string()).default([]),
 		lastmod: z.coerce.date().optional(),

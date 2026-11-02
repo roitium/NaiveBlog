@@ -38,7 +38,7 @@ try {
 	)
 	await writeFile(
 		`${fixture}/plain.md`,
-		"---\ntitle: Markdown smoke\ndate: '2026-10-20'\n---\n![Logo](/static/images/logo.png)\n",
+		"---\ntitle: 2024-04-15\ndate: '2026-10-20'\n---\n![Logo](/static/images/logo.png)\n",
 	)
 	await writeFile(
 		`${fixture}/private.mdx`,
@@ -68,6 +68,8 @@ try {
 	}
 	const article = await html('blog/__astro_smoke_test__/nested/中文')
 	const markdown = await html('blog/__astro_smoke_test__/plain')
+	assert(markdown.includes('<title>2024-04-15'))
+	assert(markdown.includes('>2024-04-15</h1>'))
 	assert(markdown.includes('width="640"'))
 	assert(markdown.includes(`${base}/static/images/logo.png`))
 	assert(article.includes('Public body marker'))
