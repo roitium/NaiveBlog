@@ -1,0 +1,60 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import PageTitle from '@/components/PageTitle'
+import RecentlyMemos from '@/components/homeComponents/RecentlyMemos'
+import RecentlyPosts from '@/components/homeComponents/RecentlyPosts'
+import HomeSocial from '@/components/HomeSocial'
+import YiYan from '@/components/YiYan'
+import site from '@/data/siteMetadata'
+import { allPosts } from '@/services/content/core'
+import {
+	allCoreContent,
+	filterVisiablePosts,
+	sortPostsByDate,
+} from '@/services/content/utils'
+import { withBase } from '@/utils/paths'
+const posts = allCoreContent(
+	sortPostsByDate(filterVisiablePosts(allPosts), false),
+).slice(0, 5)
+---
+
+<BaseLayout>
+	<div class='lg:mx-auto lg:max-w-(--breakpoint-lg)'>
+		<div class='flex min-h-[calc(100vh-4.8rem)] flex-col'>
+			<div
+				class='my-auto flex flex-col items-center justify-between gap-12 lg:flex-row lg:gap-0'
+			>
+				<div class='title-animate-fade-in flex flex-col'>
+					<PageTitle
+						title={site.title}
+						subtitle={site.description || ''}
+					/>
+					{!site.description && <YiYan client:load />}
+					<HomeSocial client:idle />
+				</div>
+				<div class='relative rounded-full'>
+					<img
+						src={withBase('/static/images/logo.png')}
+						alt='Website logo'
+						height='640'
+						width='640'
+						fetchpriority='high'
+						sizes='(max-width: 768px) 240px, 288px'
+						class='size-60 rounded-full ring-2 ring-slate-7 md:size-72 dark:ring-slatedark-7'
+					/>
+					<span
+						title='该功能暂时关闭'
+						class='absolute right-[34px] bottom-[14px] size-5 rounded-full bg-gray-10 ring-2 ring-slate-7 md:right-10 md:bottom-4 md:size-6 dark:bg-graydark-6 dark:ring-slatedark-7'
+					></span>
+				</div>
+			</div>
+			<div class='mt-auto mb-2 animate-bounce text-center text-lg'>&darr;</div>
+		</div>
+		<div
+			class='mx-auto mt-24 grid grid-cols-1 space-y-24 px-4 sm:px-6 lg:grid-cols-2 lg:gap-x-24 lg:space-y-0'
+		>
+			<RecentlyMemos client:visible />
+			<RecentlyPosts posts={posts} />
+		</div>
+	</div>
+</BaseLayout>

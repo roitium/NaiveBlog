@@ -1,15 +1,13 @@
-import ScrollTopAndComment from '@/components/ArticlePageButtonGroup'
 import Image from '@/components/Image'
 import PageTitle from '@/components/PageTitle'
-import TOCInline from '@/components/TOC'
 import '@/css/markdown.css'
 import { slug as _slug } from 'github-slugger'
-import { default as Link, default as NextLink } from 'next/link'
+import { default as Link, default as NextLink } from '@/components/Link'
 import type { ReactNode } from 'react'
-import Giscus from '@/components/Comments'
 import categoryMapping from '@/data/category-mapping'
 import siteMetadata from '@/data/siteMetadata'
 import type { TocItem } from '@/mdx-plugins/toc'
+import { Fragment } from 'react'
 import type { Author, Post } from '@/services/content/core'
 import type { CoreContent } from '@/services/content/utils'
 import { cn } from '@/utils/classname'
@@ -31,6 +29,9 @@ interface LayoutProps {
 	prev?: { path: string; title: string }
 	children: ReactNode
 	toc?: TocItem[]
+	controls?: ReactNode
+	comments?: ReactNode
+	tableOfContents?: ReactNode
 }
 
 function generateCategoryTree(categories: string[]) {
@@ -55,7 +56,9 @@ export default function PostLayout({
 	next,
 	prev,
 	children,
-	toc,
+	controls,
+	comments,
+	tableOfContents,
 }: LayoutProps) {
 	const { _meta, path, title, tags, pinned } = content
 	let { date } = content
@@ -73,7 +76,7 @@ export default function PostLayout({
 
 	return (
 		<>
-			<ScrollTopAndComment toc={toc} />
+			{controls}
 			<article>
 				<div className='mx-auto px-4 sm:px-6 xl:px-0'>
 					<div className='flex flex-col lg:flex-row'>
@@ -123,14 +126,14 @@ export default function PostLayout({
 									className='pt-6 pb-6 text-center text-slate-11 dark:text-slatedark-11'
 									id='comment'
 								>
-									<Giscus />
+									{comments}
 								</div>
 							)}
 						</div>
 
 						{/* 目录 - 右侧边栏（仅桌面显示） */}
 						<div className='hidden lg:order-3 lg:block lg:w-[240px] xl:w-[280px] shrink-0 lg:pr-6 xl:pr-8'>
-							<TableOfContents toc={toc} />
+							{tableOfContents}
 						</div>
 					</div>
 
@@ -245,7 +248,7 @@ function PostNavigation({ categories, tags, next, prev, basePath, _slug }) {
 						当前分类
 					</h2>
 					{categories.map((category, index) => (
-						<>
+						<Fragment key={category.url}>
 							<span
 								key={`${category.name}_span`}
 								className={cn(index !== 0 && 'mr-3')}
@@ -259,7 +262,7 @@ function PostNavigation({ categories, tags, next, prev, basePath, _slug }) {
 							>
 								{category.displayName}
 							</Link>
-						</>
+						</Fragment>
 					))}
 				</div>
 
@@ -319,22 +322,6 @@ function PostNavigation({ categories, tags, next, prev, basePath, _slug }) {
 				>
 					&larr; 回到列表页
 				</NextLink>
-			</div>
-		</div>
-	)
-}
-
-// 目录组件
-function TableOfContents({ toc }) {
-	return (
-		<div className='prose dark:prose-invert sticky top-0 text-sm h-screen overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
-			<div className='pt-20 pb-8'>
-				{toc ? (
-					<h2 className='not-prose ml-5 pb-2 text-lg text-slate-11 uppercase tracking-wide dark:text-slatedark-11'>
-						TOC
-					</h2>
-				) : null}
-				<TOCInline toc={toc} />
 			</div>
 		</div>
 	)

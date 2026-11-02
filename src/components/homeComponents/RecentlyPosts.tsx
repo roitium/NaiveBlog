@@ -1,12 +1,13 @@
-import Link from 'next/link'
-import { allPosts } from '@/services/content/core'
-import { allCoreContent, sortPostsByDate } from '@/services/content/utils'
+import Link from '@/components/Link'
+import type { Post } from '@/services/content/core'
+import type { CoreContent } from '@/services/content/utils'
 import { formatDate } from '@/utils/time'
 
-export default function RecentlyPosts() {
-	const coreContents = allCoreContent(sortPostsByDate(allPosts, false))
-	const posts = coreContents.slice(0, 5)
-
+export default function RecentlyPosts({
+	posts,
+}: {
+	posts: CoreContent<Post>[]
+}) {
 	return (
 		<div className='relative flex flex-col'>
 			<h2 className='mb-4 font-medium text-lg'>📄 最近文章</h2>

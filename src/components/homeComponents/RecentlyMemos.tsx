@@ -1,5 +1,5 @@
 'use client'
-import Link from 'next/link'
+import Link from '@/components/Link'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import type { ApiMemo, TimelineResponse, ApiResponse } from '@/types/memos'
@@ -7,7 +7,7 @@ import { formatToSemanticTime } from '@/utils/time'
 
 async function fetchMemos() {
 	const response = await fetch(
-		`https://nodal.roitium.com/api/v1/memos/timeline?limit=5&username=roitium`,
+		`${(import.meta.env.PUBLIC_MEMOS_ENDPOINT || 'https://v2.be.nodal.roitium.com').replace(/\/$/, '')}/api/v1/memos/timeline?limit=5&username=roitium`,
 	)
 	const jsonResp: ApiResponse<TimelineResponse> = await response.json()
 	if (jsonResp.data === null) {
@@ -86,7 +86,12 @@ export default function RecentlyMemos() {
 								<div className='-start-[7px] absolute mt-2 flex h-3 w-3 items-center justify-center rounded-full border-2 border-blue-7 bg-slate-2 dark:border-skydark-7 dark:bg-slatedark-2' />
 								<div className='mr-2 flex flex-col justify-between rounded-lg bg-slate-3 p-4 shadow-xs ring-1 ring-slate-7/50 dark:bg-slatedark-3 dark:ring-slatedark-7/50'>
 									<time className='mb-2 self-start font-normal text-slate-11 text-xs dark:text-slatedark-11'>
-										{formatToSemanticTime(memo.createdAt, navigator.language)}
+										{formatToSemanticTime(
+											memo.createdAt,
+											typeof navigator === 'undefined'
+												? 'zh-CN'
+												: navigator.language,
+										)}
 									</time>
 									<article className='prose prose-slate dark:prose-invert whitespace-pre-wrap font-normal text-sm'>
 										{memo.content}

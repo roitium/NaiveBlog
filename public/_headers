@@ -1,0 +1,7 @@
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is openpanel.dev unpkg.com; style-src 'self' 'unsafe-inline'; img-src * blob: data:; media-src *.s3.amazonaws.com; connect-src *; font-src 'self'; frame-src giscus.app;
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

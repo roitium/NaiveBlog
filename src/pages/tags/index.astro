@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import PageTitle from '@/components/PageTitle'
+import Tag from '@/components/Tag'
+import { allPosts } from '@/services/content/core'
+import { createTagCount } from '@/services/content/metaGen'
+const tags = Object.entries(createTagCount(allPosts)).sort(
+	(a, b) => b[1] - a[1],
+)
+---
+
+<BaseLayout title='Tags'
+	><PageTitle
+		title='Tags'
+		subtitle='标签'
+	/><div class='flex flex-wrap gap-5'>
+		{
+			tags.map(([name, count]) => (
+				<span>
+					<Tag text={name} /> ({count})
+				</span>
+			))
+		}
+	</div></BaseLayout
+>

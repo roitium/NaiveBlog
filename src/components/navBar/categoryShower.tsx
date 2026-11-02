@@ -1,9 +1,9 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import clsx from 'clsx'
 import { FolderArchive, Package } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { useNavigationData } from './context'
 import { memo, useState } from 'react'
-import useMediaQuery from 'src/hooks/useMediaQuery'
+import useMediaQuery from '@/hooks/useMediaQuery'
 import {
 	Drawer,
 	DrawerClose,
@@ -13,7 +13,6 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from '@/components/ui/drawer'
-import categoryData from '@/temp/category-data.json'
 import { cn } from '@/utils/classname'
 import CategoryTreeView from '../categoryTreeView'
 
@@ -44,8 +43,8 @@ function CategoryDialogModal({ isOpen, setIsOpen }) {
 						</DialogTitle>
 						<div className='mt-4'>
 							<CategoryTreeView
-								root={categoryData}
-								pathname={usePathname()}
+								root={useNavigationData().categoryData}
+								pathname={useNavigationData().pathname}
 								closeFunction={() => setIsOpen(false)}
 								expanded
 							/>
@@ -95,21 +94,21 @@ const CategoryDrawer = memo(function CategoryDrawer() {
 			>
 				<FolderArchive className='size-4' /> 分类
 			</DrawerTrigger>
-			<DrawerContent aria-describedby='categoryDrawer'>
+			<DrawerContent aria-describedby={undefined}>
 				<DrawerHeader>
 					<DrawerTitle>想去哪？</DrawerTitle>
 					{/* <DrawerDescription></DrawerDescription> */}
 				</DrawerHeader>
 				<div className='p-4'>
 					<CategoryTreeView
-						root={categoryData}
-						pathname={usePathname()}
+						root={useNavigationData().categoryData}
+						pathname={useNavigationData().pathname}
 						closeFunction={() => setIsOpen(false)}
 						expanded
 					/>
 				</div>
 				<DrawerFooter>
-					<DrawerClose />
+					<DrawerClose>关闭</DrawerClose>
 				</DrawerFooter>
 			</DrawerContent>
 		</Drawer>

@@ -1,0 +1,209 @@
+---
+import { ClientRouter } from 'astro:transitions'
+import { Toaster } from 'sonner'
+import NavigationIsland from '@/components/NavigationIsland'
+import Footer from '@/components/Footer'
+import SectionContainer from '@/components/SectionContainer'
+import site from '@/data/siteMetadata'
+import { allPosts } from '@/services/content/core'
+import { createCategoryTree, createTagCount } from '@/services/content/metaGen'
+import { withBase, withoutBase } from '@/utils/paths'
+import '@/css/LXGWWenKai-Regular/result.css'
+import '@/css/tailwind.css'
+import 'remark-github-blockquote-alert/alert.css'
+
+interface Props {
+	title?: string
+	description?: string
+	image?: string
+	canonical?: string
+	article?: { date: Date; lastmod?: Date; authors: string[] }
+	noindex?: boolean
+}
+const {
+	title,
+	description = site.description,
+	image = site.socialBanner,
+	canonical,
+	article,
+	noindex = false,
+} = Astro.props
+const pageTitle = title ? `${title} | ${site.title}` : site.title
+const canonicalURL = canonical || new URL(Astro.url.pathname, site.siteUrl).href
+const imageURL = new URL(withBase(image), site.siteUrl).href
+const pathname = withoutBase(Astro.url.pathname)
+---
+
+<!doctype html>
+<html
+	lang={site.language}
+	class='h-full w-full scroll-smooth'
+>
+	<head>
+		<meta charset='UTF-8' />
+		<meta
+			name='viewport'
+			content='width=device-width, initial-scale=1'
+		/>
+		<title>{pageTitle}</title>
+		<meta
+			name='description'
+			content={description}
+		/>
+		<meta
+			name='robots'
+			content={noindex
+				? 'noindex, nofollow'
+				: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+		/>
+		<link
+			rel='canonical'
+			href={canonicalURL}
+		/>
+		<link
+			rel='alternate'
+			type='application/rss+xml'
+			href={withBase('/feed.xml')}
+		/>
+		<link
+			rel='apple-touch-icon'
+			sizes='76x76'
+			href={withBase('/static/favicons/apple-touch-icon.png')}
+		/>
+		<link
+			rel='icon'
+			type='image/png'
+			sizes='32x32'
+			href={withBase('/static/favicons/favicon-32x32.png')}
+		/>
+		<link
+			rel='icon'
+			type='image/png'
+			sizes='16x16'
+			href={withBase('/static/favicons/favicon-16x16.png')}
+		/>
+		<link
+			rel='manifest'
+			href={withBase('/static/favicons/site.webmanifest')}
+		/>
+		<meta
+			name='theme-color'
+			media='(prefers-color-scheme: light)'
+			content='#fff'
+		/>
+		<meta
+			name='theme-color'
+			media='(prefers-color-scheme: dark)'
+			content='#000'
+		/>
+		<meta
+			property='og:title'
+			content={pageTitle}
+		/>
+		<meta
+			property='og:description'
+			content={description}
+		/>
+		<meta
+			property='og:url'
+			content={canonicalURL}
+		/>
+		<meta
+			property='og:site_name'
+			content={site.title}
+		/>
+		<meta
+			property='og:locale'
+			content='zh_CN'
+		/>
+		<meta
+			property='og:type'
+			content={article ? 'article' : 'website'}
+		/>
+		<meta
+			property='og:image'
+			content={imageURL}
+		/>
+		<meta
+			name='twitter:card'
+			content='summary_large_image'
+		/>
+		<meta
+			name='twitter:title'
+			content={pageTitle}
+		/>
+		<meta
+			name='twitter:description'
+			content={description}
+		/>
+		<meta
+			name='twitter:image'
+			content={imageURL}
+		/>
+		{
+			article && (
+				<>
+					<meta
+						property='article:published_time'
+						content={article.date.toISOString()}
+					/>
+					<meta
+						property='article:modified_time'
+						content={(article.lastmod || article.date).toISOString()}
+					/>
+					{article.authors.map((author) => (
+						<meta
+							property='article:author'
+							content={author}
+						/>
+					))}
+				</>
+			)
+		}
+		<ClientRouter />
+		<script
+			is:inline
+			data-astro-rerun
+			define:vars={{ defaultTheme: site.theme }}
+		>
+			try {
+				const theme = localStorage.getItem('theme') || defaultTheme
+				document.documentElement.classList.toggle(
+					'dark',
+					theme === 'dark' ||
+						(theme === 'system' &&
+							matchMedia('(prefers-color-scheme: dark)').matches),
+				)
+			} catch {}
+		</script>
+	</head>
+	<body
+		class='h-full min-h-screen w-full bg-slate-2 text-slate-12 antialiased accent-blue-5 dark:bg-slatedark-2/60 dark:text-slatedark-12 dark:accent-bluedark-5'
+	>
+		<Toaster client:load />
+		<NavigationIsland
+			pathname={pathname}
+			categoryData={createCategoryTree(allPosts)}
+			tagData={createTagCount(allPosts)}
+			client:load
+		/>
+		<SectionContainer>
+			<main
+				class='mx-auto min-h-screen w-full pt-20'
+				transition:name='page'
+			>
+				<slot />
+			</main>
+		</SectionContainer>
+		<Footer />
+		<script>
+			import { initArticle } from '@/utils/article-client'
+			document.addEventListener('astro:page-load', initArticle)
+			const media = matchMedia('(prefers-color-scheme: dark)')
+			media.addEventListener('change', () => {
+				if (localStorage.getItem('theme') === 'system')
+					document.documentElement.classList.toggle('dark', media.matches)
+			})
+		</script>
+	</body>
+</html>

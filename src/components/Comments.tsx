@@ -1,6 +1,6 @@
 'use client'
 import GiscusComponent from '@giscus/react'
-import { useTheme } from 'next-themes'
+import { ThemeProvider, useTheme } from 'next-themes'
 import { memo } from 'react'
 import siteMetadata from '@/data/siteMetadata'
 
@@ -40,4 +40,14 @@ const Giscus = memo(() => {
 
 Giscus.displayName = 'Giscus'
 
-export default Giscus
+export default function Comments() {
+	return (
+		<ThemeProvider
+			attribute='class'
+			defaultTheme={siteMetadata.theme}
+			enableSystem
+		>
+			<Giscus />
+		</ThemeProvider>
+	)
+}

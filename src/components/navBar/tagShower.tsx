@@ -1,9 +1,9 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import clsx from 'clsx'
 import { TagIcon } from 'lucide-react'
-import Link from 'next/link'
+import Link from '@/components/Link'
 import { memo, useCallback, useState } from 'react'
-import useMediaQuery from 'src/hooks/useMediaQuery'
+import useMediaQuery from '@/hooks/useMediaQuery'
 import {
 	Drawer,
 	DrawerClose,
@@ -13,12 +13,12 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from '@/components/ui/drawer'
-import tagData from '@/temp/tag-data.json'
+import { useNavigationData } from './context'
 import { cn } from '@/utils/classname'
 import Tag from '../Tag'
 
 function TagsContent({ close }) {
-	const tagCounts = tagData as Record<string, number>
+	const tagCounts = useNavigationData().tagData
 	const tagKeys = Object.keys(tagCounts)
 	const sortedTags = tagKeys.sort((a, b) => tagCounts[b] - tagCounts[a])
 	return (
@@ -128,7 +128,7 @@ const TagDrawer = memo(function TagDrawer() {
 			>
 				<TagIcon className='size-4' /> 标签
 			</DrawerTrigger>
-			<DrawerContent aria-describedby='tagDrawer'>
+			<DrawerContent aria-describedby={undefined}>
 				<DrawerHeader>
 					<DrawerTitle>想去哪？</DrawerTitle>
 					{/* <DrawerDescription></DrawerDescription> */}
@@ -137,7 +137,7 @@ const TagDrawer = memo(function TagDrawer() {
 					<TagsContent close={() => setIsOpen(false)} />
 				</div>
 				<DrawerFooter>
-					<DrawerClose />
+					<DrawerClose>关闭</DrawerClose>
 				</DrawerFooter>
 			</DrawerContent>
 		</Drawer>

@@ -1,0 +1,12 @@
+node_modules
+.astro
+.vercel
+.next
+dist
+src/generated
+data/blog
+pnpm-lock.yaml
+public
+src/css/LXGWWenKai-Regular
+
+.wrangler

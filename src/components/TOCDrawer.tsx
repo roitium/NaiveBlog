@@ -17,10 +17,13 @@ type TOCDrawerProps = TOCInlineProps
 export const TOCDrawer = ({ toc, ...props }: TOCDrawerProps) => {
 	return (
 		<Drawer>
-			<DrawerTrigger className='rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 lg:hidden dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600'>
+			<DrawerTrigger
+				aria-label='打开目录'
+				className='rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 lg:hidden dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600'
+			>
 				<TableOfContents className='size-5' />
 			</DrawerTrigger>
-			<DrawerContent aria-describedby='toc'>
+			<DrawerContent aria-describedby={undefined}>
 				<DrawerHeader>
 					<DrawerTitle>目录</DrawerTitle>
 				</DrawerHeader>
@@ -31,7 +34,7 @@ export const TOCDrawer = ({ toc, ...props }: TOCDrawerProps) => {
 					/>
 				</div>
 				<DrawerFooter>
-					<DrawerClose />
+					<DrawerClose aria-label='关闭目录'>关闭</DrawerClose>
 				</DrawerFooter>
 			</DrawerContent>
 		</Drawer>

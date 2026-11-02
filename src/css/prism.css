@@ -1,6 +1,4 @@
 @reference "./tailwind.css";
-@import 'tailwindcss-radix-colors/dist/green.css';
-@import 'tailwindcss-radix-colors/dist/red.css';
 /**
  * CSS Styles for code highlighting.
  * Feel free to customize token styles

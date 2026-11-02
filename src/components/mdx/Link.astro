@@ -1,0 +1,14 @@
+---
+import { withBase } from '@/utils/paths'
+const { href = '', ...props } = Astro.props
+const external = /^https?:\/\//.test(href)
+---
+
+<a
+	href={withBase(href)}
+	title={href}
+	target={external ? '_blank' : undefined}
+	rel={external ? 'noopener noreferrer' : undefined}
+	{...props}
+	><slot /></a
+>

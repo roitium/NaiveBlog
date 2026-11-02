@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets'
+import { withBase } from '@/utils/paths'
+const {
+	src,
+	alt = '',
+	width,
+	height,
+	'data-src': gallerySrc,
+	...props
+} = Astro.props
+const galleryURL = withBase(
+	gallerySrc || (typeof src === 'string' ? src : src.src),
+)
+// Astro optimizes imported files and explicitly authorized remote images.
+// Files synchronized into public/ keep their existing stable URLs.
+---
+
+{
+	typeof src === 'object' ? (
+		<Image
+			src={src}
+			alt={alt}
+			data-src={galleryURL}
+			{...props}
+		/>
+	) : (
+		<img
+			src={withBase(src)}
+			data-src={galleryURL}
+			alt={alt}
+			width={width}
+			height={height}
+			loading='lazy'
+			decoding='async'
+			{...props}
+		/>
+	)
+}

@@ -1,7 +1,7 @@
 'use client'
 import clsx from 'clsx'
 import { ChevronRight } from 'lucide-react'
-import Link from 'next/link'
+import Link from '@/components/Link'
 import { useState } from 'react'
 import type { CategoryTreeNode } from '@/services/content/metaGen'
 

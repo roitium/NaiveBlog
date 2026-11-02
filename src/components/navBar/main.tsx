@@ -13,12 +13,10 @@ import {
 	HelpCircle,
 	Home,
 	Monitor,
-	Package,
 	PenTool,
-	Tag,
 } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import Link from '@/components/Link'
+import { useNavigationData } from './context'
 import type { ReactElement, ReactNode } from 'react'
 import SearchButton from '../SearchButton'
 import CategoryShower from './categoryShower'
@@ -35,27 +33,6 @@ interface HeaderNavLink {
 interface HeaderNavLinkWithChildren extends Omit<HeaderNavLink, 'children'> {
 	children: HeaderNavLink[]
 }
-
-const _headerNavLinks: HeaderNavLink[] = [
-	{ href: '/', title: '主页', logo: <Home className='size-4' /> },
-	{
-		href: '/blog',
-		title: '文章',
-		logo: <PenTool className='size-4' />,
-		children: [
-			{ href: '/blog', title: '所有', logo: <FileText className='size-4' /> },
-			{
-				href: '/categories',
-				title: '分类',
-				logo: <Package className='size-4' />,
-			},
-			{ href: '/tags', title: '标签', logo: <Tag className='size-4' /> },
-		],
-	},
-	{ href: '/memory', title: '回忆', logo: <Cloud className='size-4' /> },
-	{ href: '/projects', title: '项目', logo: <Monitor className='size-4' /> },
-	{ href: '/about', title: '关于', logo: <HelpCircle className='size-4' /> },
-]
 
 const headerNavLinksNewVersion: HeaderNavLink[] = [
 	{ href: '/', title: '主页', logo: <Home className='size-4' /> },
@@ -149,11 +126,11 @@ const generatePopover = (
 	>
 		<PopoverButton
 			key={`${link.title}_popover_btn`}
-			role={'button'}
+			aria-label={link.title}
 			className={
 				buttonStyles(isOnThisPage(link, nowPath))[iconMode ? 'icon' : 'text']
 			}
-			as={'div'}
+			as={'button'}
 		>
 			{iconMode ? (
 				link.logo
@@ -194,6 +171,7 @@ function singleNavButtonComponent(
 		<Link
 			key={link.title}
 			href={link.href}
+			aria-label={link.title}
 			className={
 				buttonStyles(isOnThisPage(link, nowPath))[iconMode ? 'icon' : 'text']
 			}
@@ -211,7 +189,7 @@ function singleNavButtonComponent(
 }
 
 const FloatNavBar = () => {
-	const nowPath = usePathname()
+	const nowPath = useNavigationData().pathname
 
 	return (
 		<div

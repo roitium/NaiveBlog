@@ -1,0 +1,28 @@
+---
+import { slug } from 'github-slugger'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import PostsListLayout from '@/layouts/PostsListLayout.astro'
+import { allPosts } from '@/services/content/core'
+import { allCoreContent, sortPostsByDate } from '@/services/content/utils'
+import { createTagCount } from '@/services/content/metaGen'
+export function getStaticPaths() {
+	return Object.keys(createTagCount(allPosts)).map((tag) => ({
+		params: { tag },
+	}))
+}
+const tag = Astro.params.tag!
+const posts = allCoreContent(
+	sortPostsByDate(
+		allPosts.filter((post) => post.tags.map((tag) => slug(tag)).includes(tag)),
+	),
+)
+const title = tag.charAt(0).toUpperCase() + tag.slice(1)
+---
+
+<BaseLayout title={`Posts tagged with ${tag}`}
+	><PostsListLayout
+		posts={posts}
+		title={title}
+		subtitle={`${title} 标签下的所有文章`}
+	/></BaseLayout
+>

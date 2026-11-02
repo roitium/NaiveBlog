@@ -68,10 +68,10 @@ export default function MyStatus() {
 	useEffect(() => {
 		// 功能暂时关闭，不发送 sse 网络请求
 		/*
-		if (!process.env.NEXT_PUBLIC_STATUS_EVENT_SOURCE) {
+		if (!import.meta.env.PUBLIC_STATUS_EVENT_SOURCE) {
 			return
 		}
-		setupEventSource(process.env.NEXT_PUBLIC_STATUS_EVENT_SOURCE, setStatus)
+		setupEventSource(import.meta.env.PUBLIC_STATUS_EVENT_SOURCE, setStatus)
 		return () => {
 			evtSource.close()
 		}

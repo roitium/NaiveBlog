@@ -1,8 +1,8 @@
 'use client'
 import type { Action } from 'kbar'
 import { KBarProvider } from 'kbar'
-// @ts-expect-error 111
-import { useRouter } from 'nextjs-toploader/app'
+import { navigate } from 'astro:transitions/client'
+import { withBase } from '@/utils/paths'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { KBarModal } from '@/components/kbar/KBarModal'
@@ -10,30 +10,26 @@ import type { Post } from '@/services/content/core'
 import { formatDate } from '@/utils/time'
 
 export const KBarSearchProvider = ({ children }) => {
-	const router = useRouter()
-	const searchDocumentsPath = '/search.json'
+	const searchDocumentsPath = withBase('/search.json')
 	const [searchActions, setSearchActions] = useState<Action[]>([])
 	const [dataLoaded, setDataLoaded] = useState(false)
 
 	const defaultActions = useMemo(() => [], [])
 
-	const mapPosts = useCallback(
-		(posts: Post[]) => {
-			const actions: Action[] = []
-			for (const post of posts) {
-				actions.push({
-					id: post.path,
-					name: post.title,
-					keywords: post.content,
-					section: 'Blog',
-					subtitle: formatDate(post.date),
-					perform: () => router.push(`/${post.path}`),
-				})
-			}
-			return actions
-		},
-		[router],
-	)
+	const mapPosts = useCallback((posts: Post[]) => {
+		const actions: Action[] = []
+		for (const post of posts) {
+			actions.push({
+				id: post.path,
+				name: post.title,
+				keywords: post.content,
+				section: 'Blog',
+				subtitle: formatDate(post.date),
+				perform: () => navigate(withBase(`/${post.path}`)),
+			})
+		}
+		return actions
+	}, [])
 
 	useEffect(() => {
 		async function fetchData() {
@@ -51,7 +47,7 @@ export const KBarSearchProvider = ({ children }) => {
 				toast.error('获取搜索数据失败')
 			})
 		}
-	}, [mapPosts, dataLoaded])
+	}, [mapPosts, dataLoaded, searchDocumentsPath])
 
 	const memoizedProvider = useMemo(
 		() => (

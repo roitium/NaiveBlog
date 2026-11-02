@@ -1,9 +1,9 @@
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@tailwindcss/oxide'
-  - '@vercel/speed-insights'
   - contentlayer2
   - esbuild
   - lefthook
   - protobufjs
   - sharp
+  - workerd

@@ -68,3 +68,12 @@ yarn-error.log*
 
 # vscode
 .vscode
+# Astro build and generated protected content
+/.astro/
+/dist/
+/src/generated/
+
+# Cloudflare local state and secrets
+/.wrangler/
+.dev.vars
+.dev.vars.*

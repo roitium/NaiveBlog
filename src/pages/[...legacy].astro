@@ -1,0 +1,13 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import NotFound from '@/components/NotFound'
+// Historical paths are redirected by middleware; all others retain a real 404.
+export const prerender = false
+Astro.response.status = 404
+---
+
+<BaseLayout
+	title='404'
+	noindex
+	><NotFound /></BaseLayout
+>

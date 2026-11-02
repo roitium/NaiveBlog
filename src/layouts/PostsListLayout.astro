@@ -1,0 +1,42 @@
+---
+import PostsListing from './PostsListLayout'
+import CategoryTreeView from '@/components/categoryTreeView'
+import PageTitle from '@/components/PageTitle'
+import { createCategoryTree } from '@/services/content/metaGen'
+import { allPosts, type Post } from '@/services/content/core'
+import type { CoreContent } from '@/services/content/utils'
+import { withoutBase } from '@/utils/paths'
+interface Props {
+	posts: CoreContent<Post>[]
+	title?: string
+	subtitle?: string
+	initialDisplayPosts?: CoreContent<Post>[]
+	pagination?: { currentPage: number; totalPages: number }
+}
+const { title = '博文', subtitle = '思考、发癫与记录', ...props } = Astro.props
+---
+
+<div class='min-h-full lg:mx-auto lg:max-w-(--breakpoint-lg)'>
+	<PageTitle
+		title={title}
+		subtitle={subtitle}
+	/>
+	<div class='flex sm:space-x-24'>
+		<div
+			class='hidden h-full max-h-screen min-w-[280px] max-w-[280px] flex-wrap overflow-auto rounded-sm bg-slate-3 pt-5 shadow-md lg:flex dark:bg-slatedark-3'
+		>
+			<div class='flex w-full flex-col px-6 py-4'>
+				<span
+					class='px-3 font-bold text-slate-11 text-xl uppercase dark:text-slatedark-11'
+					>分类</span
+				>
+				<CategoryTreeView
+					root={createCategoryTree(allPosts)}
+					pathname={withoutBase(Astro.url.pathname)}
+					client:load
+				/>
+			</div>
+		</div>
+		<PostsListing {...props} />
+	</div>
+</div>

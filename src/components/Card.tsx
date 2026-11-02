@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/Link'
 import Image from './Image'
 
 const Card = ({ title, description, imgSrc, href }) => (

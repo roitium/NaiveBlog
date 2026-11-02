@@ -131,7 +131,11 @@ const TOCInline = ({
 					if (overflowY === 'auto' || overflowY === 'scroll') {
 						const parentRect = parent.getBoundingClientRect()
 						const targetRect = tocItem.getBoundingClientRect()
-						const offset = targetRect.top - parentRect.top - parent.clientHeight / 2 + tocItem.clientHeight / 2
+						const offset =
+							targetRect.top -
+							parentRect.top -
+							parent.clientHeight / 2 +
+							tocItem.clientHeight / 2
 						parent.scrollBy({ top: offset, behavior: 'smooth' })
 						break
 					}
@@ -172,9 +176,7 @@ const TOCInline = ({
 	const handleItemClick = (id: string) => {
 		clickedId.current = id
 		setActiveId(id)
-		
-		// eslint-disable-next-line react-compiler/react-compiler
-		window.location.hash = `#${id}`
+		window.history.replaceState(null, '', `#${id}`)
 		const targetElement = document.getElementById(id)
 		if (targetElement) {
 			targetElement.scrollIntoView({

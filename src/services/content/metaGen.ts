@@ -1,6 +1,5 @@
 // 为文章生成一些元数据的辅助函数
 
-import { writeFileSync } from 'node:fs'
 import { slug } from 'github-slugger'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
@@ -14,7 +13,7 @@ import config from '@/data/siteMetadata'
 import type { Post } from '@/services/content/core'
 import { filterVisiablePosts, sortPostsByDate } from '@/services/content/utils'
 
-const isProduction = process.env.NODE_ENV === 'production'
+const isProduction = import.meta.env.PROD
 
 export type CategoryTreeNode = {
 	name: string
@@ -36,7 +35,10 @@ export function createCategoryTree(allBlogs: Post[]) {
 	}
 
 	for (const file of allBlogs) {
-		if (file._meta.directory && (!isProduction || file.draft !== true)) {
+		if (
+			file._meta.directory &&
+			(!isProduction || (!file.draft && !file.private))
+		) {
 			if (file._meta.directory === 'blog') {
 				root.count += 1
 				continue
@@ -65,14 +67,13 @@ export function createCategoryTree(allBlogs: Post[]) {
 	for (const node of Object.values(root.children)) {
 		root.count += node.count
 	}
-	console.log('✅ Category tree generated successfully!')
-	writeFileSync('./temp/category-data.json', JSON.stringify(root, null, 2))
+	return root
 }
 
 export function createTagCount(allBlogs: Post[]) {
 	const tagCount: Record<string, number> = {}
 	for (const file of allBlogs) {
-		if (file.tags && (!isProduction || file.draft !== true)) {
+		if (file.tags && (!isProduction || (!file.draft && !file.private))) {
 			for (const tag of file.tags) {
 				const formattedTag = slug(tag)
 				if (formattedTag in tagCount) {
@@ -83,8 +84,7 @@ export function createTagCount(allBlogs: Post[]) {
 			}
 		}
 	}
-	console.log('✅ Tag counts generated successfully!')
-	writeFileSync('./temp/tag-data.json', JSON.stringify(tagCount))
+	return tagCount
 }
 
 export function createSearchIndex(allBlogs: Post[]) {
@@ -97,8 +97,7 @@ export function createSearchIndex(allBlogs: Post[]) {
 			title: blog.title,
 		}
 	})
-	writeFileSync('public/search.json', JSON.stringify(newBlogs))
-	console.log('✅ Search index generated successfully')
+	return newBlogs
 }
 
 async function generateRssItemDescription(post: Post) {
@@ -136,8 +135,5 @@ export async function generateRssFeed(allBlogs: Post[]) {
 	}
 
 	const rss = feed.xml({ indent: true })
-	writeFileSync('public/feed.xml', rss)
-	console.log('✅ RSS feed generated successfully!')
-
-	return true
+	return rss
 }

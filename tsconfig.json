@@ -1,71 +1,17 @@
 {
+	"extends": "astro/tsconfigs/base",
 	"compilerOptions": {
-		"incremental": true,
-		"target": "ES6",
-		"lib": ["dom", "dom.iterable", "esnext"],
-		"types": [],
 		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": false,
-		"forceConsistentCasingInFileNames": true,
-		"noEmit": true,
-		"composite": true,
-		"esModuleInterop": true,
-		"module": "esnext",
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"jsx": "preserve",
+		"strictNullChecks": true,
+		"jsx": "react-jsx",
+		"jsxImportSource": "react",
 		"baseUrl": ".",
 		"paths": {
-			"@/app/*": ["src/app/*"],
-			"@/components/*": ["src/components/*"],
-			"@/layouts/*": ["src/layouts/*"],
-			"@/css/*": ["src/css/*"],
-			"@/utils/*": ["src/utils/*"],
-			"@/types/*": ["src/types/*"],
 			"@/data/*": ["data/*"],
-			"@/temp/*": ["temp/*"],
 			"@/public/*": ["public/*"],
-			"@/mdx-plugins/*": ["src/mdx-plugins/*"],
-			"@/services/*": ["src/services/*"],
-			"@/hooks/*": ["src/hooks/*"],
-			"contentlayer/generated": ["./.contentlayer/generated"],
-			// "@/data/*": [
-			//   "data/*"
-			// ],
-			// "@/layouts/*": [
-			//   "layouts/*"
-			// ],
-			// "@/css/*": [
-			//   "css/*"
-			// ],
-			//       "@/types/*": [
-			//         "types/*"
-			//       ],
-			//             "@/utils/*": [
-			//               "css/*"
-			//             ],
-			"content-collections": ["./.content-collections/generated"]
-		},
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
-		"strictNullChecks": true
+			"@/*": ["src/*"]
+		}
 	},
-	"include": [
-		"next-env.d.ts",
-		"**/*.js",
-		"**/*.mjs",
-		"**/*.ts",
-		"**/*.tsx",
-		"**/*.json",
-		".contentlayer/generated",
-		".contentlayer/generated/**/*.json",
-		".next/types/**/*.ts",
-		"**/*.jsx"
-	],
-	"exclude": ["node_modules"]
+	"include": [".astro/types.d.ts", "**/*"],
+	"exclude": ["node_modules", "dist", ".vercel", ".next"]
 }

@@ -1,4 +1,15 @@
-import { spawn } from 'node:child_process'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
+import { loadEnv } from 'vite'
+import { buildGitEnvironment } from './git-auth.mjs'
+Object.assign(process.env, {
+	...loadEnv(
+		process.argv[2] || process.env.NODE_ENV || 'production',
+		process.cwd(),
+		'',
+	),
+	...process.env,
+})
 import {
 	cpSync,
 	existsSync,
@@ -32,9 +43,27 @@ const syncContentFromGit = async (contentDir) => {
 			return
 		}
 		const gitUrl = process.env.GIT_URL
-		await runBashCommand(
-			`git clone --depth 1 --single-branch ${gitUrl} ${`${contentDir}/blog-tmp`}`,
-		)
+		const gitEnv = buildGitEnvironment(gitUrl)
+		try {
+			await promisify(execFile)(
+				'git',
+				[
+					'clone',
+					'--depth',
+					'1',
+					'--single-branch',
+					'--',
+					gitUrl,
+					`${contentDir}/blog-tmp`,
+				],
+				{ env: gitEnv },
+			)
+		} catch {
+			throw new Error(
+				'文章仓库拉取失败。请检查 GIT_URL、GIT_TOKEN、GitHub 仓库权限和网络连接。',
+			)
+		}
+
 		console.log('✅ Synced content files from git successfully!')
 		mkdirSync(`${contentDir}/blog`, { recursive: true })
 		cpSync(`${contentDir}/blog-tmp/blog-posts/`, `${contentDir}/blog`, {
@@ -65,26 +94,7 @@ const syncContentFromGit = async (contentDir) => {
 	}
 }
 
-const runBashCommand = (command) =>
-	new Promise((resolve, reject) => {
-		const child = spawn(command, [], { shell: true })
-
-		child.stdout.setEncoding('utf8')
-		child.stdout.on('data', (data) => process.stdout.write(data))
-
-		child.stderr.setEncoding('utf8')
-		child.stderr.on('data', (data) => process.stderr.write(data))
-
-		child.on('close', (code) => {
-			if (code === 0) {
-				resolve(void 0)
-			} else {
-				reject(new Error(`Command failed with exit code ${code}`))
-			}
-		})
-	})
-
 syncContentFromGit(`${process.cwd()}/data`).catch((error) => {
-	console.error(error)
+	console.error(error.message)
 	process.exit(1)
 })

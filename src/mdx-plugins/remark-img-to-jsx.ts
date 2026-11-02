@@ -1,59 +1,48 @@
 import fs from 'node:fs'
-import { sync as sizeOf } from 'probe-image-size'
-import type { Literal, Node, Parent } from 'unist'
+import path from 'node:path'
+import { imageSize } from 'image-size'
+import type { Root, Image } from 'mdast'
 import { visit } from 'unist-util-visit'
+import type { VFile } from 'vfile'
 
-export type ImageNode = Parent & {
-	url: string
-	alt: string
-	name: string
-	attributes: (Literal & { name: string })[]
-}
-
-/**
- * 将 img 标签转换成 next/Image ，并增加 data-src 标签供灯箱使用
- *
- */
-export function remarkImgToJsx() {
-	return (tree: Node) => {
-		visit(
-			tree,
-			// only visit p tags that contain an img element
-			(node: Parent): node is Parent =>
-				node.type === 'paragraph' &&
-				node.children.some((n) => n.type === 'image'),
-			(node: Parent) => {
-				const imageNodeIndex = node.children.findIndex(
-					(n) => n.type === 'image',
-				)
-				const imageNode = node.children[imageNodeIndex] as ImageNode
-
-				// only local files
-				if (fs.existsSync(`${process.cwd()}/public${imageNode.url}`)) {
-					const dimensions = sizeOf(
-						fs.readFileSync(`${process.cwd()}/public${imageNode.url}`),
-					)
-
-					// Convert original node to next/image
-					imageNode.type = 'mdxJsxFlowElement'
-					imageNode.name = 'Image'
-					imageNode.attributes = [
-						{ type: 'mdxJsxAttribute', name: 'alt', value: imageNode.alt },
-						{ type: 'mdxJsxAttribute', name: 'src', value: imageNode.url },
-						{ type: 'mdxJsxAttribute', name: 'width', value: dimensions.width },
-						{
-							type: 'mdxJsxAttribute',
-							name: 'height',
-							value: dimensions.height,
-						},
-						{ type: 'mdxJsxAttribute', name: 'date-src', value: imageNode.url },
-					]
-
-					node.type = 'div'
-					node.children[imageNodeIndex] = imageNode
-					// console.log(JSON.stringify(node, null, 2))
+/** Preserve image dimensions and gallery URLs in both Markdown and MDX. */
+export function remarkImgToJsx({ base = '' }: { base?: string } = {}) {
+	return (tree: Root, file: VFile) => {
+		visit(tree, 'image', (node: Image) => {
+			const imagePath = path.resolve('public', `.${node.url}`)
+			const publicRoot = `${path.resolve('public')}${path.sep}`
+			if (!imagePath.startsWith(publicRoot) || !fs.existsSync(imagePath)) return
+			const dimensions = imageSize(fs.readFileSync(imagePath))
+			if (file.extname === '.md') {
+				node.data = {
+					...node.data,
+					hProperties: {
+						...node.data?.hProperties,
+						width: dimensions.width,
+						height: dimensions.height,
+						'data-src': `${base.replace(/\/$/, '')}${node.url}`,
+						src: `${base.replace(/\/$/, '')}${node.url}`,
+						loading: 'lazy',
+					},
 				}
-			},
-		)
+				return
+			}
+			Object.assign(node, {
+				type: 'mdxJsxTextElement',
+				name: 'Image',
+				children: [],
+				attributes: Object.entries({
+					src: node.url,
+					alt: node.alt || '',
+					width: dimensions.width,
+					height: dimensions.height,
+					'data-src': node.url,
+				}).map(([name, value]) => ({
+					type: 'mdxJsxAttribute',
+					name,
+					value: String(value),
+				})),
+			})
+		})
 	}
 }

@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import PageTitle from '@/components/PageTitle'
+import CategoryTreeView from '@/components/categoryTreeView'
+import { allPosts } from '@/services/content/core'
+import { createCategoryTree } from '@/services/content/metaGen'
+---
+
+<BaseLayout title='Categories'
+	><PageTitle
+		title='Categories'
+		subtitle='分类'
+	/><CategoryTreeView
+		root={createCategoryTree(allPosts)}
+		pathname='/categories'
+		expanded
+		client:load
+	/></BaseLayout
+>

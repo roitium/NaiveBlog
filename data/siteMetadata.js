@@ -8,19 +8,19 @@ const siteMetadata = {
 	theme: 'light', // system, dark or light
 	siteUrl: 'https://www.roitium.com',
 	siteRepo: 'https://github.com/roitium/blog-main',
-	siteContentRepo: 'https://github.com/roitium/blog-content',
+	siteContentRepo: 'https://github.com/roitium/blog-posts',
 	email: 'me@roitium.com',
 	github: 'https://github.com/roitium',
- x: "https://x.com/yoshino_2333",
+	x: 'https://x.com/yoshino_2333',
 	locale: 'zh-CN',
 	stickyNav: false,
 	comments: {
 		provider: 'giscus',
 		giscusConfig: {
-			repo: process.env.NEXT_PUBLIC_GISCUS_REPO,
-			repositoryId: process.env.NEXT_PUBLIC_GISCUS_REPOSITORY_ID,
-			categories: process.env.NEXT_PUBLIC_GISCUS_CATEGORY,
-			categoryId: process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID,
+			repo: import.meta.env.PUBLIC_GISCUS_REPO,
+			repositoryId: import.meta.env.PUBLIC_GISCUS_REPOSITORY_ID,
+			categories: import.meta.env.PUBLIC_GISCUS_CATEGORY,
+			categoryId: import.meta.env.PUBLIC_GISCUS_CATEGORY_ID,
 			mapping: 'pathname',
 			reactions: '1',
 			metadata: '0',
@@ -33,7 +33,7 @@ const siteMetadata = {
 	search: {
 		provider: 'kbar',
 		kbarConfig: {
-			searchDocumentsPath: `${process.env.BASE_PATH || ''}/search.json`,
+			searchDocumentsPath: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/search.json`,
 		},
 	},
 }
@@ -41,4 +41,4 @@ const siteMetadata = {
 siteMetadata.siteLogo = `${siteMetadata.siteUrl}/static/images/logo.png`
 siteMetadata.socialBanner = `${siteMetadata.siteUrl}/static/images/og.jpg`
 
-module.exports = siteMetadata
+export default siteMetadata

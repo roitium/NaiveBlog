@@ -1,0 +1,41 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import PostsListLayout from '@/layouts/PostsListLayout.astro'
+import { allPosts } from '@/services/content/core'
+import { allCoreContent, sortPostsByDate } from '@/services/content/utils'
+import {
+	createCategoryTree,
+	type CategoryTreeNode,
+} from '@/services/content/metaGen'
+import categoryMapping from '@/data/category-mapping'
+export function getStaticPaths() {
+	function paths(node: CategoryTreeNode): string[] {
+		return [node.fullPath, ...Object.values(node.children).flatMap(paths)]
+	}
+	return paths(createCategoryTree(allPosts)).map((category) => ({
+		params: { category },
+	}))
+}
+const category = Astro.params.category!
+const posts = allCoreContent(
+	sortPostsByDate(
+		allPosts.filter((post) => post.path.startsWith(`${category}/`)),
+	),
+)
+const names = category.split('/')
+const title =
+	category === 'blog'
+		? '所有博文'
+		: names
+				.slice(1)
+				.map((name) => categoryMapping[name]?.show || name)
+				.join('/')
+---
+
+<BaseLayout title={`Posts in ${title}`}
+	><PostsListLayout
+		posts={posts}
+		title={title}
+		subtitle={categoryMapping[names.at(-1)!]?.desc || ''}
+	/></BaseLayout
+>

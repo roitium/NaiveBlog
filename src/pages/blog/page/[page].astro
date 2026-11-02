@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import PostsListLayout from '@/layouts/PostsListLayout.astro'
+import { allPosts } from '@/services/content/core'
+import { allCoreContent, sortPostsByDate } from '@/services/content/utils'
+export function getStaticPaths() {
+	const posts = allCoreContent(sortPostsByDate(allPosts))
+	return Array.from({ length: Math.ceil(posts.length / 5) }, (_, i) => ({
+		params: { page: String(i + 1) },
+		props: { posts, page: i + 1 },
+	}))
+}
+const { posts, page } = Astro.props
+---
+
+<BaseLayout title={`Blog - ${page}`}
+	><PostsListLayout
+		posts={posts}
+		initialDisplayPosts={posts.slice((page - 1) * 5, page * 5)}
+		pagination={{ currentPage: page, totalPages: Math.ceil(posts.length / 5) }}
+	/></BaseLayout
+>

@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import 'tailwindcss-radix-colors/dist/green.css';
+@import 'tailwindcss-radix-colors/dist/red.css';
 @import 'tailwindcss-radix-colors/dist/slate.css';
 @import 'tailwindcss-radix-colors/dist/gray.css';
 @import 'tailwindcss-radix-colors/dist/blue.css';
@@ -6,7 +8,7 @@
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
 @source '../../data/**/*.mdx';
-@source '../../node_modules/pliny/**/*.js';
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
 	/* 容器 */

@@ -17,7 +17,7 @@ export default function LightGalleryWrapper({
 		<LightGallery
 			speed={500}
 			plugins={[lgThumbnail, lgZoom]}
-			licenseKey={process.env.NEXT_PUBLIC_LIGHT_GALLERY_LICENSE_KEY}
+			licenseKey={import.meta.env.PUBLIC_LIGHT_GALLERY_LICENSE_KEY}
 			selector={'img'}
 		>
 			{children}
