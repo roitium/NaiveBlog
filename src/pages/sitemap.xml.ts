@@ -6,7 +6,7 @@ import {
 	createTagCount,
 	type CategoryTreeNode,
 } from '@/services/content/metaGen'
-import { filterVisiablePosts } from '@/services/content/utils'
+import { filterPublicPosts } from '@/services/content/utils'
 import { withBase } from '@/utils/paths'
 const escape = (text: string) =>
 	text.replace(
@@ -35,7 +35,7 @@ export const GET: APIRoute = () => {
 		'/memory',
 		'/tags',
 		'/categories',
-		...filterVisiablePosts(allPosts).map((post) => `/${post.path}`),
+		...filterPublicPosts(allPosts).map((post) => `/${post.path}`),
 		...Object.keys(createTagCount(allPosts)).map((tag) => `/tags/${tag}`),
 		...categories(createCategoryTree(allPosts)),
 	]

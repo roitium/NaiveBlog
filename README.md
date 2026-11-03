@@ -39,7 +39,7 @@ pnpm deploy    # 构建并发布到 Cloudflare Workers
 - 配置 `GIT_URL` 后，`dev` 和 `build` 会先拉取内容仓库的 `blog-posts/` 与 `static/images/`。未配置时使用本地内容。
 - 目录层级决定分类，例如 `data/blog/programming/typescript.mdx` 对应 `/blog/programming/typescript` 与 `/categories/blog/programming`。
 - 支持数学公式、代码高亮、代码标题、GitHub 提示块、引用与 MDX 自定义组件。
-- `draft: true` 的文章仅在开发环境显示。`private: true` 的文章不会进入生产环境的列表、搜索、RSS、分类统计与 sitemap；直接访问 URL 显示密码输入框。
+- `draft: true` 的文章仅在开发环境显示。`private: true` 的文章会显示在首页、文章列表、分类、标签和前后篇导航中，但不进入搜索、RSS 和文章 sitemap；访问正文需要输入密码。
 - 密码正文仅在服务端验证成功后返回。不要将受保护正文或密码放进公开图片、前端组件 props 或公开变量。
 - 加密文章通过 Worker 按需渲染，解锁后使用与公开文章相同的 Astro 原生 MDX 流程，支持相对图片和 Astro / React 组件。普通文章仍在构建时生成静态 HTML，文章 URL 不变。
 - 解锁状态使用按文章签名的 HttpOnly、SameSite=Lax Cookie，HTTPS 下启用 Secure，最长有效 7 天；密码变更后失效。页面和鉴权接口均返回 `private, no-store`，不会把正文放入共享缓存。

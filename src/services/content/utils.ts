@@ -2,16 +2,21 @@ import type { Post } from './core'
 
 const isProduction = import.meta.env.PROD
 /**
- *  在生产环境下，过滤掉草稿和隐私文章
- *  防止未完成或私有的内容在生产环境被公开
+ *  前端列表显示已发布文章，包括需要密码解锁的文章。
+ *  生产环境只排除草稿；正文和密码由 coreContent / 服务端鉴权隔离。
  * @param {Post[]} allBlogs
  * @returns {Post[]}
  */
 export function filterVisiablePosts<T extends Post>(allBlogs: T[]): T[] {
 	if (isProduction) {
-		return allBlogs.filter((blog) => !(blog.draft || blog.private))
+		return allBlogs.filter((blog) => !blog.draft)
 	}
 	return allBlogs
+}
+
+/** Search, RSS and sitemap must not publish protected articles. */
+export function filterPublicPosts<T extends Post>(posts: T[]): T[] {
+	return filterVisiablePosts(posts).filter((post) => !post.private)
 }
 
 /**
@@ -83,7 +88,7 @@ export const omit = <Obj, Keys extends keyof Obj>(
 
 /**
  * 从 MDX 文档列表中删除 password, content, _id, toc，只返回核心内容
- * 如果 `NODE_ENV` === "production"，还会过滤掉草稿和私密文章
+ * 在生产环境排除草稿，私密文章仅保留列表展示所需的元数据。
  *  确保用户只能访问到需要的核心数据，并且在生产环境下不会包含草稿内容
  * @param {T[]} contents
  * @return {*}  {CoreContent<T>[]}

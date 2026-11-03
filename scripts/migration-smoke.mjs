@@ -49,6 +49,11 @@ try {
 		`${fixture}/other-private.mdx`,
 		`---\ntitle: Another protected post\ndate: '2026-11-02'\nprivate: true\npassword: '${password}'\n---\nother-private-body-marker-2981\n`,
 	)
+	await mkdir(`${fixture}/private-only`, { recursive: true })
+	await writeFile(
+		`${fixture}/private-only/listed.mdx`,
+		`---\ntitle: Listed protected article\ndate: '2026-11-03'\nprivate: true\npassword: '${password}'\ntags: [PrivateOnlyTag]\n---\nprivate-only-body-marker-2981\n`,
+	)
 	await writeFile(
 		`${fixture}/draft.mdx`,
 		"---\ntitle: Draft smoke test\ndate: '2026-11-02'\ndraft: true\ntags: [DraftSmokeTag]\n---\nastro-draft-body-marker-2981\n",
@@ -110,6 +115,7 @@ try {
 		for (const marker of [
 			secret,
 			'other-private-body-marker-2981',
+			'private-only-body-marker-2981',
 			JSON.parse(await readFile('src/generated/private-post-key.json', 'utf8'))
 				.key,
 			password,
@@ -120,12 +126,35 @@ try {
 	}
 	for (const name of ['search.json', 'feed.xml', 'sitemap.xml']) {
 		const text = await readFile(`${output}/${name}`, 'utf8')
-		assert(!text.includes('__astro_smoke_test__/private'), name)
+		if (name === 'sitemap.xml') {
+			const urls = [...text.matchAll(/<loc>(.*?)<\/loc>/g)].map(
+				(match) => new URL(match[1]).pathname,
+			)
+			assert(!urls.includes(`${base}/blog/__astro_smoke_test__/private`))
+			assert(
+				!urls.includes(`${base}/blog/__astro_smoke_test__/private-only/listed`),
+			)
+		} else assert(!text.includes('__astro_smoke_test__/private'), name)
+		assert(!text.includes('Protected smoke test'), name)
+		assert(!text.includes('Listed protected article'), name)
 		assert(!text.includes('__astro_smoke_test__/draft'), name)
 	}
 	const blog = await html('blog')
-	assert(!blog.includes('Protected smoke test'))
+	assert(blog.includes('Protected smoke test'))
+	assert(blog.includes('Listed protected article'))
 	assert(!blog.includes('Draft smoke test'))
+	assert((await html('')).includes('Listed protected article'))
+	assert(
+		(await html('tags/protectedsmoketag')).includes('Protected smoke test'),
+	)
+	assert(
+		(await html('tags/privateonlytag')).includes('Listed protected article'),
+	)
+	assert(
+		(await html('categories/blog/__astro_smoke_test__/private-only')).includes(
+			'Listed protected article',
+		),
+	)
 	worker = await startWorker({ base })
 	const request = (url, init) =>
 		fetch(`${worker.origin}${base}${url}`, {

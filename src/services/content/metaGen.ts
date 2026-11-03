@@ -11,9 +11,11 @@ import { unified } from 'unified'
 import categoryMapping from '@/data/category-mapping'
 import config from '@/data/siteMetadata'
 import type { Post } from '@/services/content/core'
-import { filterVisiablePosts, sortPostsByDate } from '@/services/content/utils'
-
-const isProduction = import.meta.env.PROD
+import {
+	filterVisiablePosts,
+	filterPublicPosts,
+	sortPostsByDate,
+} from '@/services/content/utils'
 
 export type CategoryTreeNode = {
 	name: string
@@ -34,11 +36,8 @@ export function createCategoryTree(allBlogs: Post[]) {
 		fullPath: 'blog',
 	}
 
-	for (const file of allBlogs) {
-		if (
-			file._meta.directory &&
-			(!isProduction || (!file.draft && !file.private))
-		) {
+	for (const file of filterVisiablePosts(allBlogs)) {
+		if (file._meta.directory) {
 			if (file._meta.directory === 'blog') {
 				root.count += 1
 				continue
@@ -72,8 +71,8 @@ export function createCategoryTree(allBlogs: Post[]) {
 
 export function createTagCount(allBlogs: Post[]) {
 	const tagCount: Record<string, number> = {}
-	for (const file of allBlogs) {
-		if (file.tags && (!isProduction || (!file.draft && !file.private))) {
+	for (const file of filterVisiablePosts(allBlogs)) {
+		if (file.tags) {
 			for (const tag of file.tags) {
 				const formattedTag = slug(tag)
 				if (formattedTag in tagCount) {
@@ -88,7 +87,7 @@ export function createTagCount(allBlogs: Post[]) {
 }
 
 export function createSearchIndex(allBlogs: Post[]) {
-	const blogs = sortPostsByDate(filterVisiablePosts(allBlogs))
+	const blogs = sortPostsByDate(filterPublicPosts(allBlogs))
 	const newBlogs = blogs.map((blog) => {
 		return {
 			content: blog.content,
@@ -122,7 +121,7 @@ export async function generateRssFeed(allBlogs: Post[]) {
 		feed_url: `${config.siteUrl}/feed.xml`,
 	})
 
-	const visiablePosts = filterVisiablePosts(allBlogs)
+	const visiablePosts = filterPublicPosts(allBlogs)
 
 	for (const post of visiablePosts) {
 		feed.item({
