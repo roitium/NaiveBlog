@@ -64,7 +64,8 @@ pnpm deploy    # 构建并发布到 Cloudflare Workers
 
 ## 环境变量与部署
 
-参考 `.env.example`。浏览器变量使用 `PUBLIC_*`；兼容已有部署中的 `NEXT_PUBLIC_*` 同名变量，显式配置的 `PUBLIC_*` 优先。私密变量不要使用这两个前缀。
+参考 `.env.example`。浏览器变量使用 `PUBLIC_*`，Astro / Vite 会在构建时自动注入；私密变量不要使用 `PUBLIC_` 前缀。
+如果部署环境仍保留 `NEXT_PUBLIC_*` 变量，请先重命名为对应的 `PUBLIC_*`，Astro 不会读取旧前缀。
 
 部署使用 `@astrojs/cloudflare` 和 `wrangler.jsonc`。静态页面与资源输出到 `dist/client/`，服务端 Worker 输出到 `dist/server/`。Wrangler 自动读取构建生成的配置，静态资源由 `ASSETS` binding 提供，服务端接口由 Worker 执行。
 
@@ -78,9 +79,9 @@ pnpm exec wrangler login
 pnpm deploy
 ```
 
-`wrangler.jsonc` 中的 Worker 名称默认是 `naive-blog`，可按需修改。在 Cloudflare Workers Builds 中连接此仓库时，安装命令使用 `pnpm install --frozen-lockfile`，构建命令使用 `pnpm build`，部署命令使用 `pnpm exec wrangler deploy`。
+`wrangler.jsonc` 中的 Worker 名称默认是 `naiveblog`，可按需修改。在 Cloudflare Workers Builds 中连接此仓库时，安装命令使用 `pnpm install --frozen-lockfile`，构建命令使用 `pnpm build`，部署命令使用 `pnpm exec wrangler deploy`。
 
-`PUBLIC_*` 和兼容的 `NEXT_PUBLIC_*` 变量在构建时写入客户端代码，应配置在构建环境中；修改后需要重新构建。`GIT_URL` 同样仅用于构建阶段。未来新增的运行时密钥应通过 `wrangler secret put` 配置，不要放进公开前缀变量或提交到仓库。
+`PUBLIC_*` 变量在构建时写入客户端代码，应配置在构建环境中；修改后需要重新构建。`GIT_URL` 同样仅用于构建阶段。未来新增的运行时密钥应通过 `wrangler secret put` 配置，不要放进公开前缀变量或提交到仓库。
 
 已启用 `nodejs_compat`，密码接口可使用 Node crypto。项目没有使用 Astro Sessions，因此关闭了 session 支持，不会自动创建 KV namespace；图片使用构建时优化，也不要求 Cloudflare Images binding。静态资源的安全响应头位于 `public/_headers`，动态响应通过 Astro middleware 设置。
 

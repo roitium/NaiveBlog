@@ -12,11 +12,8 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
+# generated pages
 public/sitemap.xml
-.vercel
 
 # production
 /build
@@ -43,9 +40,6 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-# Contentlayer
-.contentlayer
-
 # IDEA
 .idea/
 
@@ -62,9 +56,6 @@ yarn-error.log*
 .million
 .aider*
 .env
-
-# Content-collections
-.content-collections
 
 # vscode
 .vscode

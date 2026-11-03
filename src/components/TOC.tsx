@@ -1,4 +1,3 @@
-'use client'
 import { type JSX, useEffect, useRef, useState } from 'react'
 import type { Toc, TocItem } from '@/mdx-plugins/toc'
 

@@ -2,7 +2,7 @@ import Image from '@/components/Image'
 import PageTitle from '@/components/PageTitle'
 import '@/css/markdown.css'
 import { slug as _slug } from 'github-slugger'
-import { default as Link, default as NextLink } from '@/components/Link'
+import Link from '@/components/Link'
 import type { ReactNode } from 'react'
 import categoryMapping from '@/data/category-mapping'
 import siteMetadata from '@/data/siteMetadata'
@@ -61,12 +61,7 @@ export default function PostLayout({
 	tableOfContents,
 }: LayoutProps) {
 	const { _meta, path, title, tags, pinned } = content
-	let { date } = content
-
-	// 如果 content 经过了 server component -> client component 的传递，那么 date 会被序列化成字符串，所以这里需要做一个判断。
-	if (typeof date === 'string') {
-		date = new Date(date)
-	}
+	const { date } = content
 
 	const basePath = path.split('/')[0]
 	const paths = path.split('/')
@@ -115,9 +110,9 @@ export default function PostLayout({
 
 							{/* 文章底部链接 */}
 							<div className='pt-6 pb-6 text-center text-slate-11 text-sm dark:text-slatedark-11'>
-								<NextLink href={editUrl(_meta.filePath)}>
+								<Link href={editUrl(_meta.filePath)}>
 									View on GitHub (If you have access)
-								</NextLink>
+								</Link>
 							</div>
 
 							{/* 评论区域 */}
@@ -274,13 +269,13 @@ function PostNavigation({ categories, tags, next, prev, basePath, _slug }) {
 						</h2>
 						<div className='flex flex-wrap'>
 							{tags.map((tag) => (
-								<NextLink
+								<Link
 									href={`/tags/${_slug(tag)}`}
 									key={tag}
 									className='mt-2 mr-4 font-medium text-slate-12 text-sm uppercase hover:text-blue-11 dark:text-slatedark-12 dark:hover:text-skydark-11'
 								>
 									{tag.split(' ').join('-')}
-								</NextLink>
+								</Link>
 							))}
 						</div>
 					</div>
@@ -296,7 +291,7 @@ function PostNavigation({ categories, tags, next, prev, basePath, _slug }) {
 								上一篇
 							</h2>
 							<div className='text-slate-12 hover:text-blue-11 dark:text-slatedark-12 dark:hover:text-skydark-11'>
-								<NextLink href={`/${prev.path}`}>{prev.title}</NextLink>
+								<Link href={`/${prev.path}`}>{prev.title}</Link>
 							</div>
 						</div>
 					)}
@@ -306,7 +301,7 @@ function PostNavigation({ categories, tags, next, prev, basePath, _slug }) {
 								下一篇
 							</h2>
 							<div className='text-slate-12 hover:text-blue-11 dark:text-slatedark-12 dark:hover:text-skydark-11'>
-								<NextLink href={`/${next.path}`}>{next.title}</NextLink>
+								<Link href={`/${next.path}`}>{next.title}</Link>
 							</div>
 						</div>
 					)}
@@ -315,13 +310,13 @@ function PostNavigation({ categories, tags, next, prev, basePath, _slug }) {
 
 			{/* 返回列表页链接 */}
 			<div className='pt-4 lg:pt-8'>
-				<NextLink
+				<Link
 					href={`/${basePath}`}
 					className='text-slate-12 hover:text-blue-11 dark:text-slatedark-12 dark:hover:text-skydark-11'
 					aria-label='回到列表页'
 				>
 					&larr; 回到列表页
-				</NextLink>
+				</Link>
 			</div>
 		</div>
 	)

@@ -1,11 +1,9 @@
-'use client'
 import clsx from 'clsx'
-import PageTitle from '@/components/PageTitle'
 import type { ApiMemo } from '@/types/memos'
 import 'lightgallery/css/lg-thumbnail.css'
 import 'lightgallery/css/lg-zoom.css'
 import 'lightgallery/css/lightgallery.css'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { fetchMemos } from './fetchFunctions'
 import { MemoRowComponent } from './singleMemoRow'
 
@@ -86,28 +84,8 @@ export default function MemosPage() {
 		})
 	}
 
-	const subtitle = useMemo(
-		() => (
-			<>
-				<p>人生三大乐事：梗图、发癫与暴论</p>
-			</>
-		),
-		[],
-	)
-
-	const memoizedPageTitle = useMemo(
-		() => (
-			<PageTitle
-				title='Memories'
-				subtitle={subtitle}
-			/>
-		),
-		[subtitle],
-	)
-
 	return (
-		<div className='flex w-full flex-col lg:mx-auto lg:max-w-(--breakpoint-lg)'>
-			{memoizedPageTitle}
+		<div className='flex w-full flex-col'>
 			<div
 				className={clsx('flex w-full flex-col', hasLoaded && ' appear-animate')}
 			>

@@ -1,11 +1,15 @@
 ---
-import PostsListing from './PostsListLayout'
 import CategoryTreeView from '@/components/categoryTreeView'
+import Link from '@/components/Link'
 import PageTitle from '@/components/PageTitle'
+import Tag from '@/components/Tag'
+import siteMetadata from '@/data/siteMetadata'
 import { createCategoryTree } from '@/services/content/metaGen'
 import { allPosts, type Post } from '@/services/content/core'
 import type { CoreContent } from '@/services/content/utils'
+import { formatDate } from '@/utils/time'
 import { withoutBase } from '@/utils/paths'
+
 interface Props {
 	posts: CoreContent<Post>[]
 	title?: string
@@ -13,7 +17,19 @@ interface Props {
 	initialDisplayPosts?: CoreContent<Post>[]
 	pagination?: { currentPage: number; totalPages: number }
 }
-const { title = '博文', subtitle = '思考、发癫与记录', ...props } = Astro.props
+
+const {
+	posts,
+	title = '博文',
+	subtitle = '思考、发癫与记录',
+	initialDisplayPosts = [],
+	pagination,
+} = Astro.props
+const displayPosts =
+	initialDisplayPosts.length > 0 ? initialDisplayPosts : posts
+const prevPage = pagination && pagination.currentPage - 1 > 0
+const nextPage =
+	pagination && pagination.currentPage + 1 <= pagination.totalPages
 ---
 
 <div class='min-h-full lg:mx-auto lg:max-w-(--breakpoint-lg)'>
@@ -37,6 +53,117 @@ const { title = '博文', subtitle = '思考、发癫与记录', ...props } = As
 				/>
 			</div>
 		</div>
-		<PostsListing {...props} />
+		<div>
+			<ul>
+				{
+					displayPosts.map((post) => (
+						<li class='mx-auto py-5'>
+							<article class='flex flex-col space-y-2 xl:space-y-0'>
+								<dl>
+									<dt class='sr-only'>Published on</dt>
+									<dd class='font-medium text-base text-slate-11 leading-6 dark:text-slatedark-11'>
+										<time datetime={post.date.toISOString()}>
+											{formatDate(post.date, siteMetadata.locale)}{' '}
+											{post.pinned ? '(置顶博文)' : ''}
+										</time>
+									</dd>
+								</dl>
+								<div class='space-y-3'>
+									<div>
+										<h2 class='break-words font-bold text-2xl leading-8 tracking-tight'>
+											<Link
+												href={`/${post.path}`}
+												className='overflow-hidden break-words text-slate-12 dark:text-slatedark-12'
+											>
+												{post.title}
+											</Link>
+										</h2>
+										<div class='flex flex-wrap'>
+											{post.tags?.map((tag) => (
+												<Tag text={tag} />
+											))}
+										</div>
+									</div>
+									<div class=' prose-slate max-w-none text-slate-11 dark:text-slatedark-11'>
+										{post.summary}
+										<br />
+										<div class='mt-3 flex items-center text-[12px]'>
+											<svg
+												role='img'
+												aria-label='clock'
+												xmlns='http://www.w3.org/2000/svg'
+												fill='none'
+												viewBox='0 0 24 24'
+												stroke-width='1.5'
+												stroke='currentColor'
+												class='size-[18px]'
+											>
+												<path
+													stroke-linecap='round'
+													stroke-linejoin='round'
+													d='M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
+												/>
+											</svg>
+											<span>
+												&nbsp; 预计阅读时长：
+												{Math.ceil(post.readingTime)}
+												分钟
+											</span>
+										</div>
+									</div>
+								</div>
+							</article>
+						</li>
+					))
+				}
+			</ul>
+			{
+				pagination && pagination.totalPages > 1 && (
+					<div class='space-y-2 pt-6 pb-8 md:space-y-5'>
+						<nav class='flex justify-between'>
+							{prevPage ? (
+								<Link
+									href={
+										pagination.currentPage - 1 === 1
+											? '/blog/'
+											: `/blog/page/${pagination.currentPage - 1}`
+									}
+									rel='prev'
+								>
+									上一页
+								</Link>
+							) : (
+								<button
+									type='button'
+									class='cursor-auto disabled:opacity-50'
+									disabled
+								>
+									上一页
+								</button>
+							)}
+							<span>
+								{pagination.currentPage} / {pagination.totalPages}
+							</span>
+							{nextPage ? (
+								<Link
+									href={`/blog/page/${pagination.currentPage + 1}`}
+									rel='next'
+								>
+									下一页
+								</Link>
+							) : (
+								<button
+									type='button'
+									class='cursor-auto disabled:opacity-50'
+									disabled
+								>
+									下一页
+								</button>
+							)}
+						</nav>
+					</div>
+				)
+			}
+		</div>
 	</div>
 </div>

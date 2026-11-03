@@ -1,4 +1,3 @@
-'use client'
 /*调用一言接口获取不同的简介内容*/
 
 import { useEffect, useState } from 'react'

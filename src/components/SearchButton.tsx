@@ -1,4 +1,3 @@
-'use client'
 import { useKBar } from 'kbar'
 import { SearchIcon } from 'lucide-react'
 import { memo } from 'react'

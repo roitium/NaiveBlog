@@ -1,5 +1,3 @@
-'use client'
-
 import { TableOfContents } from 'lucide-react'
 import TOCInline, { type TOCInlineProps } from './TOC'
 import {

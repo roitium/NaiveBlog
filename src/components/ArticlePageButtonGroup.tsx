@@ -1,5 +1,3 @@
-'use client'
-
 // 该组件是博文页面右下角的按钮组件，包括返回顶部和跳转评论区，以及手机端的显示 TOC 按钮。
 
 import { useEffect, useState } from 'react'

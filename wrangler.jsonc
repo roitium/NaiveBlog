@@ -1,6 +1,6 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "naive-blog",
+	"name": "naiveblog",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"compatibility_date": "2026-11-02",
 	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],

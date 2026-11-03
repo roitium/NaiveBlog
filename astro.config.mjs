@@ -11,28 +11,19 @@ import { remarkImgToJsx } from './src/mdx-plugins/remark-img-to-jsx.ts'
 import { remarkPlugins, rehypePlugins } from './src/mdx-plugins/config.ts'
 
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '')
-// Accept existing deployment variables while new installations use PUBLIC_*.
-const publicEnv = Object.fromEntries(
-	Object.entries({ ...env, ...process.env })
-		.filter(([key]) => key.startsWith('NEXT_PUBLIC_'))
-		.map(([key, value]) => [key.replace('NEXT_PUBLIC_', 'PUBLIC_'), value]),
-)
-Object.assign(
-	publicEnv,
-	Object.fromEntries(
-		Object.entries({ ...env, ...process.env }).filter(([key]) =>
-			key.startsWith('PUBLIC_'),
-		),
-	),
-)
-try {
-	publicEnv.PUBLIC_COMMIT_HASH ||= execFileSync('git', ['rev-parse', 'HEAD'], {
-		encoding: 'utf8',
-	}).trim()
-} catch {
-	/* A source archive may not contain .git. */
-}
-publicEnv.PUBLIC_BUILD_TIME = new Date().toISOString()
+// Vite exposes PUBLIC_* automatically; only generated build metadata needs defining.
+const buildEnv = { PUBLIC_BUILD_TIME: new Date().toISOString() }
+const configuredCommitHash =
+	env.PUBLIC_COMMIT_HASH || process.env.PUBLIC_COMMIT_HASH
+if (configuredCommitHash) buildEnv.PUBLIC_COMMIT_HASH = configuredCommitHash
+else
+	try {
+		buildEnv.PUBLIC_COMMIT_HASH = execFileSync('git', ['rev-parse', 'HEAD'], {
+			encoding: 'utf8',
+		}).trim()
+	} catch {
+		/* A source archive may not contain .git. */
+	}
 
 const base = env.BASE_PATH || process.env.BASE_PATH || '/'
 const markdownPlugins = remarkPlugins.map((plugin) =>
@@ -42,6 +33,7 @@ const markdownPlugins = remarkPlugins.map((plugin) =>
 export default defineConfig({
 	site: 'https://www.roitium.com',
 	base,
+	// Cloudflare handles /about.html as a static-asset redirect before middleware.
 	redirects: {
 		'/about.html': {
 			status: 308,
@@ -71,7 +63,7 @@ export default defineConfig({
 	vite: {
 		plugins: [tailwindcss()],
 		define: Object.fromEntries(
-			Object.entries(publicEnv).map(([key, value]) => [
+			Object.entries(buildEnv).map(([key, value]) => [
 				`import.meta.env.${key}`,
 				JSON.stringify(value),
 			]),

@@ -1,7 +1,5 @@
 node_modules
 .astro
-.vercel
-.next
 dist
 src/generated
 data/blog

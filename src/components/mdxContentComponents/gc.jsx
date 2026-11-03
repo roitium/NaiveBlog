@@ -1,6 +1,5 @@
 /** biome-ignore-all lint/complexity/noForEach: vibe coding*/
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: vibe coding */
-'use client'
 import { useCallback, useEffect, useState } from 'react'
 
 // 初始对象数据

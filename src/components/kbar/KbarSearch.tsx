@@ -1,4 +1,3 @@
-'use client'
 import type { Action } from 'kbar'
 import { KBarProvider } from 'kbar'
 import { navigate } from 'astro:transitions/client'

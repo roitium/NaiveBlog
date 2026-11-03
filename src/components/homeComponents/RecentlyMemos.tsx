@@ -1,4 +1,3 @@
-'use client'
 import Link from '@/components/Link'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'

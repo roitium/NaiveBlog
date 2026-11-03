@@ -1,6 +1,15 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import MemosPage from '@/components/memory/MemosPage'
+import PageTitle from '@/components/PageTitle'
 ---
 
-<BaseLayout title='Memories'><MemosPage client:load /></BaseLayout>
+<BaseLayout title='Memories'>
+	<div class='flex w-full flex-col lg:mx-auto lg:max-w-(--breakpoint-lg)'>
+		<PageTitle
+			title='Memories'
+			subtitle='人生三大乐事：梗图、发癫与暴论'
+		/>
+		<MemosPage client:visible />
+	</div>
+</BaseLayout>

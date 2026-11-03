@@ -1,21 +1,33 @@
-'use client'
 import GiscusComponent from '@giscus/react'
-import { ThemeProvider, useTheme } from 'next-themes'
-import { memo } from 'react'
+import { useSyncExternalStore } from 'react'
 import siteMetadata from '@/data/siteMetadata'
 
-const Giscus = memo(() => {
+const subscribeToTheme = (onChange: () => void) => {
+	const observer = new MutationObserver(onChange)
+	observer.observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ['class'],
+	})
+	const colorScheme = matchMedia('(prefers-color-scheme: dark)')
+	colorScheme.addEventListener('change', onChange)
+	return () => {
+		observer.disconnect()
+		colorScheme.removeEventListener('change', onChange)
+	}
+}
+
+const getTheme = () =>
+	document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+const getServerTheme = () => (siteMetadata.theme === 'dark' ? 'dark' : 'light')
+
+export default function Comments() {
 	const configs = siteMetadata.comments?.giscusConfig
-	const { theme: nextTheme, resolvedTheme } = useTheme()
+	const theme = useSyncExternalStore(subscribeToTheme, getTheme, getServerTheme)
 	if (!configs) {
 		return null
 	}
 	const commentsTheme =
-		configs?.themeURL === ''
-			? nextTheme === 'dark' || resolvedTheme === 'dark'
-				? configs.darkTheme
-				: configs.theme
-			: configs?.themeURL
+		configs.themeURL || (theme === 'dark' ? configs.darkTheme : configs.theme)
 
 	const COMMENTS_ID = 'comments-container'
 
@@ -35,19 +47,5 @@ const Giscus = memo(() => {
 			lang={configs?.lang}
 			loading='lazy'
 		/>
-	)
-})
-
-Giscus.displayName = 'Giscus'
-
-export default function Comments() {
-	return (
-		<ThemeProvider
-			attribute='class'
-			defaultTheme={siteMetadata.theme}
-			enableSystem
-		>
-			<Giscus />
-		</ThemeProvider>
 	)
 }
