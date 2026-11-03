@@ -1,4 +1,5 @@
 {
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
 	"printWidth": 80,
 	"tabWidth": 2,
 	"useTabs": true,
@@ -12,15 +13,16 @@
 	"arrowParens": "always",
 	"endOfLine": "lf",
 	"singleAttributePerLine": true,
-	"plugins": [
-		"prettier-plugin-astro"
-	],
-	"overrides": [
-		{
-			"files": "*.astro",
-			"options": {
-				"parser": "astro"
-			}
-		}
+	"sortPackageJson": false,
+	"astro": true,
+	"ignorePatterns": [
+		"node_modules",
+		".astro",
+		"dist",
+		"src/generated",
+		"data/blog",
+		"pnpm-lock.yaml",
+		"public",
+		".wrangler"
 	]
 }

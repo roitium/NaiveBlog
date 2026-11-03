@@ -19,10 +19,10 @@ const posts = allCoreContent(
 const title = tag.charAt(0).toUpperCase() + tag.slice(1)
 ---
 
-<BaseLayout title={`Posts tagged with ${tag}`}
-	><PostsListLayout
+<BaseLayout title={`Posts tagged with ${tag}`}>
+	<PostsListLayout
 		posts={posts}
 		title={title}
 		subtitle={`${title} 标签下的所有文章`}
-	/></BaseLayout
->
+	/>
+</BaseLayout>

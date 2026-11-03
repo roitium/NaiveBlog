@@ -51,9 +51,11 @@ const pathname = withoutBase(Astro.url.pathname)
 		/>
 		<meta
 			name='robots'
-			content={noindex
-				? 'noindex, nofollow'
-				: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+			content={
+				noindex
+					? 'noindex, nofollow'
+					: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+			}
 		/>
 		<link
 			rel='canonical'
@@ -139,26 +141,24 @@ const pathname = withoutBase(Astro.url.pathname)
 			name='twitter:image'
 			content={imageURL}
 		/>
-		{
-			article && (
-				<>
+		{article && (
+			<>
+				<meta
+					property='article:published_time'
+					content={article.date.toISOString()}
+				/>
+				<meta
+					property='article:modified_time'
+					content={(article.lastmod || article.date).toISOString()}
+				/>
+				{article.authors.map((author) => (
 					<meta
-						property='article:published_time'
-						content={article.date.toISOString()}
+						property='article:author'
+						content={author}
 					/>
-					<meta
-						property='article:modified_time'
-						content={(article.lastmod || article.date).toISOString()}
-					/>
-					{article.authors.map((author) => (
-						<meta
-							property='article:author'
-							content={author}
-						/>
-					))}
-				</>
-			)
-		}
+				))}
+			</>
+		)}
 		<ClientRouter />
 		<script
 			is:inline
@@ -176,9 +176,7 @@ const pathname = withoutBase(Astro.url.pathname)
 			} catch {}
 		</script>
 	</head>
-	<body
-		class='h-full min-h-screen w-full bg-slate-2 text-slate-12 antialiased accent-blue-5 dark:bg-slatedark-2/60 dark:text-slatedark-12 dark:accent-bluedark-5'
-	>
+	<body class='h-full min-h-screen w-full bg-slate-2 text-slate-12 antialiased accent-blue-5 dark:bg-slatedark-2/60 dark:text-slatedark-12 dark:accent-bluedark-5'>
 		<Toaster client:load />
 		<NavigationIsland
 			pathname={pathname}

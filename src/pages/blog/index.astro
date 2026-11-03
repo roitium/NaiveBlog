@@ -6,10 +6,10 @@ import { allCoreContent, sortPostsByDate } from '@/services/content/utils'
 const posts = allCoreContent(sortPostsByDate(allPosts))
 ---
 
-<BaseLayout title='Blog'
-	><PostsListLayout
+<BaseLayout title='Blog'>
+	<PostsListLayout
 		posts={posts}
 		initialDisplayPosts={posts.slice(0, 5)}
 		pagination={{ currentPage: 1, totalPages: Math.ceil(posts.length / 5) }}
-	/></BaseLayout
->
+	/>
+</BaseLayout>

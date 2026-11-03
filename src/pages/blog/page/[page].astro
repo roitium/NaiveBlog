@@ -13,10 +13,10 @@ export function getStaticPaths() {
 const { posts, page } = Astro.props
 ---
 
-<BaseLayout title={`Blog - ${page}`}
-	><PostsListLayout
+<BaseLayout title={`Blog - ${page}`}>
+	<PostsListLayout
 		posts={posts}
 		initialDisplayPosts={posts.slice((page - 1) * 5, page * 5)}
 		pagination={{ currentPage: page, totalPages: Math.ceil(posts.length / 5) }}
-	/></BaseLayout
->
+	/>
+</BaseLayout>

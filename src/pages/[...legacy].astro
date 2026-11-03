@@ -36,18 +36,16 @@ if (post) {
 } else Astro.response.status = 404
 ---
 
-{
-	post ? (
-		<ArticlePage
-			post={post}
-			unlocked={unlocked}
-		/>
-	) : (
-		<BaseLayout
-			title='404'
-			noindex
-		>
-			<NotFound />
-		</BaseLayout>
-	)
-}
+{post ? (
+	<ArticlePage
+		post={post}
+		unlocked={unlocked}
+	/>
+) : (
+	<BaseLayout
+		title='404'
+		noindex
+	>
+		<NotFound />
+	</BaseLayout>
+)}

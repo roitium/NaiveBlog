@@ -6,14 +6,15 @@ import { allPosts } from '@/services/content/core'
 import { createCategoryTree } from '@/services/content/metaGen'
 ---
 
-<BaseLayout title='Categories'
-	><PageTitle
+<BaseLayout title='Categories'>
+	<PageTitle
 		title='Categories'
 		subtitle='分类'
-	/><CategoryTreeView
+	/>
+	<CategoryTreeView
 		root={createCategoryTree(allPosts)}
 		pathname='/categories'
 		expanded
 		client:load
-	/></BaseLayout
->
+	/>
+</BaseLayout>

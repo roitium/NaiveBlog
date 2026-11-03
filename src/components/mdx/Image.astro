@@ -16,24 +16,22 @@ const galleryURL = withBase(
 // Files synchronized into public/ keep their existing stable URLs.
 ---
 
-{
-	typeof src === 'object' ? (
-		<Image
-			src={src}
-			alt={alt}
-			data-src={galleryURL}
-			{...props}
-		/>
-	) : (
-		<img
-			src={withBase(src)}
-			data-src={galleryURL}
-			alt={alt}
-			width={width}
-			height={height}
-			loading='lazy'
-			decoding='async'
-			{...props}
-		/>
-	)
-}
+{typeof src === 'object' ? (
+	<Image
+		src={src}
+		alt={alt}
+		data-src={galleryURL}
+		{...props}
+	/>
+) : (
+	<img
+		src={withBase(src)}
+		data-src={galleryURL}
+		alt={alt}
+		width={width}
+		height={height}
+		loading='lazy'
+		decoding='async'
+		{...props}
+	/>
+)}

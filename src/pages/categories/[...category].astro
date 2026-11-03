@@ -32,10 +32,10 @@ const title =
 				.join('/')
 ---
 
-<BaseLayout title={`Posts in ${title}`}
-	><PostsListLayout
+<BaseLayout title={`Posts in ${title}`}>
+	<PostsListLayout
 		posts={posts}
 		title={title}
 		subtitle={categoryMapping[names.at(-1)!]?.desc || ''}
-	/></BaseLayout
->
+	/>
+</BaseLayout>

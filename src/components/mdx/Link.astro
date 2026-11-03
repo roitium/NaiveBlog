@@ -10,5 +10,6 @@ const external = /^https?:\/\//.test(href)
 	target={external ? '_blank' : undefined}
 	rel={external ? 'noopener noreferrer' : undefined}
 	{...props}
-	><slot /></a
 >
+	<slot />
+</a>

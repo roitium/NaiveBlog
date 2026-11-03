@@ -87,41 +87,37 @@ const jsonLd = {
 			slot='comments'
 			client:load
 		/>
-		{
-			toc && (
-				<div
-					slot='table-of-contents'
-					class='prose dark:prose-invert sticky top-0 h-screen overflow-y-auto text-sm [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'
-				>
-					<div class='pt-20 pb-8'>
-						<h2 class='not-prose ml-5 pb-2 text-lg text-slate-11 uppercase tracking-wide dark:text-slatedark-11'>
-							TOC
-						</h2>
-						<TOC
-							toc={toc}
-							client:load
-						/>
-					</div>
-				</div>
-			)
-		}
-		{
-			post.private && !unlocked ? (
-				post.password ? (
-					<PasswordForm
-						slug={post.slug}
+		{toc && (
+			<div
+				slot='table-of-contents'
+				class='prose dark:prose-invert sticky top-0 h-screen overflow-y-auto text-sm [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'
+			>
+				<div class='pt-20 pb-8'>
+					<h2 class='not-prose ml-5 pb-2 text-lg text-slate-11 uppercase tracking-wide dark:text-slatedark-11'>
+						TOC
+					</h2>
+					<TOC
+						toc={toc}
 						client:load
 					/>
-				) : (
-					<p>该文章为私密且没有设置密码，不能给你看哦~</p>
-				)
+				</div>
+			</div>
+		)}
+		{post.private && !unlocked ? (
+			post.password ? (
+				<PasswordForm
+					slug={post.slug}
+					client:load
+				/>
 			) : (
-				Content && (
-					<div data-article-gallery>
-						<Content components={components} />
-					</div>
-				)
+				<p>该文章为私密且没有设置密码，不能给你看哦~</p>
 			)
-		}
+		) : (
+			Content && (
+				<div data-article-gallery>
+					<Content components={components} />
+				</div>
+			)
+		)}
 	</PostLayout>
 </BaseLayout>

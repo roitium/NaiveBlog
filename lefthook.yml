@@ -1,17 +1,12 @@
 pre-commit:
-  parallel: true
+  parallel: false
   commands:
-    lint-and-format-codes:
-      glob: '*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx}'
-      run: pnpm eslint "{staged_files}" && pnpm prettier --write "{staged_files}"
-      stage_fixed: true
-    format-astro:
-      glob: '*.astro'
-      run: pnpm prettier --write "{staged_files}"
-      stage_fixed: true
-    format-plain-text:
-      glob: '*.{md,,json,jsonc}'
-      run: pnpm prettier --write "{staged_files}"
+    lint:
+      glob: '*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'
+      run: pnpm oxlint {staged_files}
+    format:
+      glob: '*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,astro,md,mdx,json,jsonc,json5,yml,yaml,toml,css,scss,less,html,vue,svelte,graphql,gql}'
+      run: pnpm oxfmt --no-error-on-unmatched-pattern {staged_files}
       stage_fixed: true
 
 remotes:

@@ -9,17 +9,16 @@ const tags = Object.entries(createTagCount(allPosts)).sort(
 )
 ---
 
-<BaseLayout title='Tags'
-	><PageTitle
+<BaseLayout title='Tags'>
+	<PageTitle
 		title='Tags'
 		subtitle='标签'
-	/><div class='flex flex-wrap gap-5'>
-		{
-			tags.map(([name, count]) => (
-				<span>
-					<Tag text={name} /> ({count})
-				</span>
-			))
-		}
-	</div></BaseLayout
->
+	/>
+	<div class='flex flex-wrap gap-5'>
+		{tags.map(([name, count]) => (
+			<span>
+				<Tag text={name} /> ({count})
+			</span>
+		))}
+	</div>
+</BaseLayout>

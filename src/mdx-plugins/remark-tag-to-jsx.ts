@@ -13,7 +13,7 @@ export const remarkTagToJsx: Plugin = () => (tree) => {
 		// biome-ignore lint/suspicious/noImplicitAnyLet: 这个插件代码我还没完全看懂，先用
 		let match
 		let lastIndex = 0
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- 我太懒了！有空替换成 unknown！
+		// oxlint-disable-next-line typescript/no-explicit-any -- 我太懒了！有空替换成 unknown！
 		const parts: any[] = []
 
 		// biome-ignore lint/suspicious/noAssignInExpressions: 这个插件代码我还没完全看懂，先用

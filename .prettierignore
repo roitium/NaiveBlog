@@ -1,9 +1,0 @@
-node_modules
-.astro
-dist
-src/generated
-data/blog
-pnpm-lock.yaml
-public
-
-.wrangler

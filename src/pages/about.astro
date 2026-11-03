@@ -17,40 +17,36 @@ const { name, avatar, occupation, company, email, twitter, linkedin, github } =
 			title='About'
 			subtitle='我是谁？'
 		/>
-		<div
-			class='items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0'
-		>
+		<div class='items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0'>
 			<div class='flex flex-col items-center space-x-2 pt-8'>
-				{
-					avatar && (
-						<components.Image
-							src={avatar}
-							alt='avatar'
-							width={192}
-							height={192}
-							class='h-48 w-48 rounded-full'
-						/>
-					)
-				}
+				{avatar && (
+					<components.Image
+						src={avatar}
+						alt='avatar'
+						width={192}
+						height={192}
+						class='h-48 w-48 rounded-full'
+					/>
+				)}
 				<h3 class='pt-4 pb-2 font-bold text-2xl leading-8 tracking-tight'>
 					{name}
 				</h3>
-				<div class='text-gray-500 dark:text-gray-400'>{occupation}</div><div
-					class='text-gray-500 dark:text-gray-400'
-				>
-					{company}
-				</div>
+				<div class='text-gray-500 dark:text-gray-400'>{occupation}</div>
+				<div class='text-gray-500 dark:text-gray-400'>{company}</div>
 				<div class='flex space-x-3 pt-6'>
 					<SocialIcon
 						kind='mail'
 						href={email ? `mailto:${email}` : undefined}
-					/><SocialIcon
+					/>
+					<SocialIcon
 						kind='github'
 						href={github}
-					/><SocialIcon
+					/>
+					<SocialIcon
 						kind='linkedin'
 						href={linkedin}
-					/><SocialIcon
+					/>
+					<SocialIcon
 						kind='x'
 						href={twitter}
 					/>
