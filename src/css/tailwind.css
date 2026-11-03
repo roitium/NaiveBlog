@@ -313,7 +313,27 @@ input:-webkit-autofill:focus {
 
 article {
 	font-family: 'LXGW WenKai', serif;
-	font-weight: 'normal';
+	font-weight: 400;
+}
+
+/* The heavier face is published as a separate family at weight 500. */
+article
+	:is(
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6,
+		strong,
+		b,
+		.font-semibold,
+		.font-bold,
+		.font-extrabold,
+		.font-black
+	) {
+	font-family: 'LXGW WenKai Medium', 'LXGW WenKai', serif;
+	font-weight: 500;
 }
 
 /* @layer base {

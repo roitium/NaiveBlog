@@ -49,6 +49,8 @@ pnpm deploy    # 构建并发布到 Cloudflare Workers
 
 `public/` 图片保留原有稳定 URL，并生成尺寸属性；React 组件使用原生 `<img>`。需要构建时图片优化的新增资源可放入 `src/`，使用 `astro:assets` 的 `Image`。
 
+正文使用霞鹜文楷，仅在文章布局中通过 npm 包 `@chinese-fonts/lxgwwenkai` 引入 Regular（400）和 Medium（500）字重。文章标题、强调文本和加粗类使用 Medium；该版本没有独立的 Bold（700）字重。字体由构建工具打包到站点资源中，浏览器按 `unicode-range` 加载所需分包，无需在源码中维护字体文件或连接第三方字体 CDN。
+
 ## 私密文章仓库
 
 文章仓库为 `https://github.com/roitium/blog-posts.git`，当前目录结构可直接使用。

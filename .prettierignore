@@ -7,6 +7,5 @@ src/generated
 data/blog
 pnpm-lock.yaml
 public
-src/css/LXGWWenKai-Regular
 
 .wrangler
