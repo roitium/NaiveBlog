@@ -3,7 +3,7 @@ import mapping from '@/data/old-blog-posts-mapping.json'
 import { withBase, withoutBase } from '@/utils/paths'
 
 const csp =
-	"default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is openpanel.dev unpkg.com; style-src 'self' 'unsafe-inline'; img-src * blob: data:; media-src *.s3.amazonaws.com; connect-src *; font-src 'self'; frame-src giscus.app;"
+	"default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; media-src 'self' blob: https://*.s3.amazonaws.com; connect-src 'self' https://v2.be.nodal.roitium.com https://international.v1.hitokoto.cn https://cloudflareinsights.com; frame-src https://giscus.app; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
 export const onRequest = defineMiddleware(async (context, next) => {
 	const path = withoutBase(context.url.pathname).replace(/\/$/, '') || '/'
 	const direct: Record<string, string> = {

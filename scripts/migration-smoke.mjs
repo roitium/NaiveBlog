@@ -168,11 +168,16 @@ try {
 	assert(
 		staticResponse.headers
 			.get('content-security-policy')
-			?.includes("default-src 'self'"),
+			?.includes("frame-ancestors 'none'"),
 	)
 	const privateURL = '/blog/__astro_smoke_test__/private'
 	const locked = await request(privateURL)
 	assert.equal(locked.status, 200)
+	assert(
+		locked.headers
+			.get('content-security-policy')
+			?.includes("frame-ancestors 'none'"),
+	)
 	assert.equal(locked.headers.get('cache-control'), 'private, no-store')
 	assert.equal(locked.headers.get('vary'), 'Cookie')
 	const gate = await locked.text()
