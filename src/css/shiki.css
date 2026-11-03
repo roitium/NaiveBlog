@@ -1,0 +1,29 @@
+@reference "./tailwind.css";
+
+.astro-code {
+	@apply flex overflow-x-auto border border-gray-200 bg-(--shiki-light-bg) text-(--shiki-light) [&_span]:text-(--shiki-light);
+}
+
+.dark .astro-code {
+	@apply border-gray-700 bg-(--shiki-dark-bg) text-(--shiki-dark) [&_span]:text-(--shiki-dark);
+}
+
+.astro-code code {
+	@apply flex-[1_0_100%] bg-inherit p-0;
+}
+
+.astro-code .line.diff.add {
+	@apply relative inline-block w-full bg-green-400/20 before:absolute before:-left-3 before:text-green-500 before:content-['+'];
+}
+
+.astro-code .line.diff.remove {
+	@apply relative inline-block w-full bg-red-500/20 before:absolute before:-left-3 before:text-red-500 before:content-['-'];
+}
+
+.astro-code .line.highlighted {
+	@apply inline-block w-full bg-slate-400/20;
+}
+
+.astro-code .highlighted-word {
+	@apply rounded-sm border border-gray-200 px-0.5 py-px dark:border-gray-700;
+}

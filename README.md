@@ -38,7 +38,7 @@ pnpm deploy    # 构建并发布到 Cloudflare Workers
 - 文章存放于 `data/blog/**/*.{md,mdx}`，作者资料存放于 `data/authors/*.mdx`。
 - 配置 `GIT_URL` 后，`dev` 和 `build` 会先拉取内容仓库的 `blog-posts/` 与 `static/images/`。未配置时使用本地内容。
 - 目录层级决定分类，例如 `data/blog/programming/typescript.mdx` 对应 `/blog/programming/typescript` 与 `/categories/blog/programming`。
-- 支持数学公式、代码高亮、代码标题、GitHub 提示块、引用与 MDX 自定义组件。
+- 支持数学公式、Shiki 代码高亮、GitHub 提示块与 MDX 自定义组件。
 - `draft: true` 的文章仅在开发环境显示。`private: true` 的文章会显示在首页、文章列表、分类、标签和前后篇导航中，但不进入搜索、RSS 和文章 sitemap；访问正文需要输入密码。
 - 密码正文仅在服务端验证成功后返回。不要将受保护正文或密码放进公开图片、前端组件 props 或公开变量。
 - 加密文章通过 Worker 按需渲染，解锁后使用与公开文章相同的 Astro 原生 MDX 流程，支持相对图片和 Astro / React 组件。普通文章仍在构建时生成静态 HTML，文章 URL 不变。
@@ -47,9 +47,9 @@ pnpm deploy    # 构建并发布到 Cloudflare Workers
 
 已有的 `<Image />`、`<TOCInline />` 和 `<GCPlay />` 由组件映射兼容。新增 React 交互组件时，在 MDX 中导入组件并使用 Astro 的 `client:load` 或 `client:visible` 指令，或建立 `.astro` 包装组件。公开 MDX 不再使用 `@content-collections/mdx/react` 编译产物。
 
-`public/` 图片保留原有稳定 URL，并生成尺寸属性；React 组件使用原生 `<img>`。需要构建时图片优化的新增资源可放入 `src/`，使用 `astro:assets` 的 `Image`。
+正文图片使用 Astro 默认的 Markdown 图片处理；`public/` 图片保留原有稳定 URL。显式 `<Image />` 仍由组件映射兼容，React 组件使用原生 `<img>`。需要构建时图片优化的新增资源可放入 `src/`，使用 `astro:assets` 的 `Image`。
 
-正文使用霞鹜文楷，仅在文章布局中通过 npm 包 `@chinese-fonts/lxgwwenkai` 引入 Regular（400）和 Medium（500）字重。文章标题、强调文本和加粗类使用 Medium；该版本没有独立的 Bold（700）字重。字体由构建工具打包到站点资源中，浏览器按 `unicode-range` 加载所需分包，无需在源码中维护字体文件或连接第三方字体 CDN。
+全站正文使用霞鹜文楷，通过 npm 包 `@chinese-fonts/lxgwwenkai` 引入 Regular（400）和 Medium（500）字重；标题、强调文本和加粗类使用 Medium。代码使用 Astro Fonts API 自托管的 Monaspace Neon。字体由构建工具打包到站点资源中，浏览器按需加载，无需在源码中维护字体文件或连接第三方字体 CDN。
 
 ## 私密文章仓库
 

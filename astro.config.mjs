@@ -1,14 +1,19 @@
 import { execFileSync } from 'node:child_process'
-import { defineConfig } from 'astro/config'
+import { defineConfig, fontProviders } from 'astro/config'
 import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
 import cloudflare from '@astrojs/cloudflare'
 import { loadEnv } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import { unified } from '@astrojs/markdown-remark'
+import {
+	transformerNotationDiff,
+	transformerNotationHighlight,
+	transformerNotationWordHighlight,
+} from '@shikijs/transformers'
 import privatePostAuth from './src/integrations/private-post-auth.ts'
-import { remarkImgToJsx } from './src/mdx-plugins/remark-img-to-jsx.ts'
 import { remarkPlugins, rehypePlugins } from './src/mdx-plugins/config.ts'
+import { transformerFileName } from './src/utils/transformers/fileName.js'
 
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '')
 // Vite exposes PUBLIC_* automatically; only generated build metadata needs defining.
@@ -26,9 +31,6 @@ else
 	}
 
 const base = env.BASE_PATH || process.env.BASE_PATH || '/'
-const markdownPlugins = remarkPlugins.map((plugin) =>
-	plugin === remarkImgToJsx ? [remarkImgToJsx, { base }] : plugin,
-)
 
 export default defineConfig({
 	site: 'https://www.roitium.com',
@@ -53,13 +55,34 @@ export default defineConfig({
 		mdx(),
 	],
 	markdown: {
-		syntaxHighlight: false,
 		processor: unified({
-			remarkPlugins: markdownPlugins,
+			remarkPlugins,
 			rehypePlugins,
 			smartypants: false,
 		}),
+		shikiConfig: {
+			themes: { light: 'min-light', dark: 'night-owl' },
+			defaultColor: false,
+			wrap: false,
+			transformers: [
+				transformerFileName({ style: 'v2', hideDot: false }),
+				transformerNotationHighlight(),
+				transformerNotationWordHighlight(),
+				transformerNotationDiff({ matchAlgorithm: 'v3' }),
+			],
+		},
 	},
+	fonts: [
+		{
+			name: 'Monaspace Neon',
+			cssVariable: '--font-monaspace-neon',
+			provider: fontProviders.fontsource(),
+			fallbacks: [],
+			weights: [300, 400, 500, 600, 700],
+			styles: ['normal'],
+			formats: ['woff2', 'woff'],
+		},
+	],
 	vite: {
 		plugins: [tailwindcss()],
 		define: Object.fromEntries(

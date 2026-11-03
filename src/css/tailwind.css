@@ -5,6 +5,8 @@
 @import 'tailwindcss-radix-colors/dist/gray.css';
 @import 'tailwindcss-radix-colors/dist/blue.css';
 @import 'tailwindcss-radix-colors/dist/grass.css';
+@import '@chinese-fonts/lxgwwenkai/dist/LXGWWenKai-Regular/result.css';
+@import '@chinese-fonts/lxgwwenkai/dist/LXGWWenKai-Medium/result.css';
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
 @source '../../data/**/*.mdx';
@@ -14,6 +16,9 @@
 	/* 容器 */
 	--container-padding: 2rem;
 	--breakpoint-2xl: 1400px;
+	--font-app: 'LXGW WenKai', monospace;
+	--font-mono:
+		var(--font-monaspace-neon), ui-monospace, SFMono-Regular, Menlo, monospace;
 
 	/* 行高 */
 	--leading-11: 2.75rem;
@@ -133,6 +138,19 @@
 html {
 	scroll-padding-top: 80px;
 	text-autospace: normal;
+}
+
+@layer base {
+	:where(h1, h2, h3, h4, h5, h6, strong, b, th) {
+		font-family: 'LXGW WenKai Medium', monospace;
+	}
+
+	pre,
+	code {
+		font-feature-settings:
+			'calt', 'liga', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06', 'ss07',
+			'ss08', 'ss09';
+	}
 }
 
 /* add fade in & out to ViewTransition on page*/
@@ -267,10 +285,6 @@ html {
 	@apply no-underline;
 }
 
-.csl-entry {
-	@apply my-5;
-}
-
 .no-scrollbar::-webkit-scrollbar {
 	display: none;
 }
@@ -312,7 +326,7 @@ input:-webkit-autofill:focus {
 }
 
 article {
-	font-family: 'LXGW WenKai', serif;
+	font-family: var(--font-app);
 	font-weight: 400;
 }
 
@@ -332,7 +346,7 @@ article
 		.font-extrabold,
 		.font-black
 	) {
-	font-family: 'LXGW WenKai Medium', 'LXGW WenKai', serif;
+	font-family: 'LXGW WenKai Medium', monospace;
 	font-weight: 500;
 }
 

@@ -1,4 +1,3 @@
-import remarkMediaCard from '@zhouhua-dev/remark-media-card'
 import rehypeStringify from 'rehype-stringify'
 import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
@@ -60,7 +59,6 @@ export async function fetchMemos() {
 		jsonResp.data.data.map(async (memo: ApiMemo) => {
 			memo.content = await unified()
 				.use(remarkParse)
-				.use(remarkMediaCard)
 				.use(remarkGfm)
 				.use(remarkTagToJsx)
 				.use(remarkRehype, { allowDangerousHtml: true })

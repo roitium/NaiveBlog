@@ -22,7 +22,6 @@ const posts = defineCollection({
 		images: z.array(z.string()).optional(),
 		authors: z.array(z.string()).default(['default']),
 		layout: z.string().optional(),
-		bibliography: z.string().optional(),
 		canonicalUrl: z.string().optional(),
 		private: z.boolean().default(false),
 		password: z.string().nullable().optional(),

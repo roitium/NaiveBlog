@@ -21,9 +21,8 @@ export function initArticle() {
 		.querySelectorAll<HTMLButtonElement>('[data-copy-code]')
 		.forEach((button) => {
 			button.onclick = async () => {
-				const code = button
-					.closest('[data-code-block]')
-					?.querySelector('pre')?.textContent
+				const pre = button.closest('[data-code-block]')?.querySelector('pre')
+				const code = pre?.querySelector('code')?.textContent ?? pre?.textContent
 				if (!code) return
 				try {
 					await navigator.clipboard.writeText(code)

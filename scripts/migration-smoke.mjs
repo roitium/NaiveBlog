@@ -34,7 +34,7 @@ try {
 	await mkdir(`${fixture}/nested`, { recursive: true })
 	await writeFile(
 		`${fixture}/nested/中文.mdx`,
-		`---\ntitle: Astro smoke test 中文\ndate: '2026-11-02'\ntags: [AstroSmoke]\nsummary: Smoke test\n---\n## Repeated\n\nPublic body marker $E=mc^2$.\n\n## Repeated\n\n\`\`\`ts:example.ts\nconst answer = 42\n\`\`\`\n\n![Logo](/static/images/logo.png)\n\n<GCPlay />\n`,
+		`---\ntitle: Astro smoke test 中文\ndate: '2026-11-02'\ntags: [AstroSmoke]\nsummary: Smoke test\n---\n## Repeated\n\nPublic body marker $E=mc^2$.\n\n## Repeated\n\n\`\`\`ts file="example.ts"\n// [!code highlight]\nconst answer = 42\n\`\`\`\n\n![Logo](/static/images/logo.png)\n\n<GCPlay />\n`,
 	)
 	await writeFile(
 		`${fixture}/plain.md`,
@@ -80,10 +80,12 @@ try {
 	const markdown = await html('blog/__astro_smoke_test__/plain')
 	assert(markdown.includes('<title>2024-04-15'))
 	assert(markdown.includes('>2024-04-15</h1>'))
-	assert(markdown.includes('width="640"'))
 	assert(markdown.includes(`${base}/static/images/logo.png`))
 	assert(article.includes('Public body marker'))
 	assert(article.includes('class="katex"'))
+	assert(article.includes('class="astro-code'))
+	assert(article.includes('example.ts'))
+	assert(article.includes('highlighted'))
 	assert(article.includes('data-copy-code'))
 	assert(article.includes('id="repeated-1"'))
 	assert(article.includes('gc.'))
