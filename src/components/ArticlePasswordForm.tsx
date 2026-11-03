@@ -1,18 +1,10 @@
-import { useMemo, useState } from 'react'
-import { getMDXComponent } from 'mdx-bundler/client'
-import { components } from './MDXComponents'
-import LightGalleryWrapper from './LightGalleryWrapper'
-import TOC from './TOC'
-import type { Toc } from '@/mdx-plugins/toc'
+import { useState } from 'react'
 import { withBase } from '@/utils/paths'
 
-export default function PrivateArticle({ slug }: { slug: string }) {
+export default function ArticlePasswordForm({ slug }: { slug: string }) {
 	const [password, setPassword] = useState('')
-	const [code, setCode] = useState('')
-	const [toc, setToc] = useState<Toc>([])
 	const [message, setMessage] = useState('')
 	const [pending, setPending] = useState(false)
-	const Content = useMemo(() => (code ? getMDXComponent(code) : null), [code])
 	async function unlock(event: React.FormEvent) {
 		event.preventDefault()
 		if (pending) return
@@ -30,28 +22,13 @@ export default function PrivateArticle({ slug }: { slug: string }) {
 				setMessage(data.message || '密码错误，请重新输入！')
 				return
 			}
-			setCode(data.code)
-			setToc(data.toc)
-			setPassword('')
+			window.location.reload()
 		} catch {
 			setMessage('获取文章时出错，请重试！')
 		} finally {
 			setPending(false)
 		}
 	}
-	if (Content)
-		return (
-			<>
-				<TOC
-					toc={toc}
-					asDisclosure
-					collapse
-				/>
-				<LightGalleryWrapper>
-					<Content components={components} />
-				</LightGalleryWrapper>
-			</>
-		)
 	return (
 		<form
 			onSubmit={unlock}

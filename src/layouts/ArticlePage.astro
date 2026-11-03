@@ -1,0 +1,125 @@
+---
+import { getEntry, render } from 'astro:content'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import PostLayout from '@/layouts/PostLayout'
+import TOC from '@/components/TOC'
+import ArticleControls from '@/components/ArticlePageButtonGroup'
+import Comments from '@/components/Comments'
+import PasswordForm from '@/components/ArticlePasswordForm'
+import { components } from '@/components/mdx'
+import { allPosts, allAuthors, type Post } from '@/services/content/core'
+import {
+	allCoreContent,
+	coreContent,
+	sortPostsByDate,
+} from '@/services/content/utils'
+import site from '@/data/siteMetadata'
+import '@/css/prism.css'
+import 'katex/dist/katex.css'
+const { post, unlocked = false } = Astro.props as {
+	post: Post
+	unlocked?: boolean
+}
+const showBody = !post.private || unlocked
+const sorted = allCoreContent(sortPostsByDate(allPosts))
+const index = sorted.findIndex((item) => item.slug === post.slug)
+// Navigation props contain public metadata only, never source bodies or passwords.
+const prev =
+	index >= 0 && sorted[index + 1]
+		? { path: sorted[index + 1].path, title: sorted[index + 1].title }
+		: undefined
+const next =
+	index >= 0 && sorted[index - 1]
+		? { path: sorted[index - 1].path, title: sorted[index - 1].title }
+		: undefined
+const authors = post.authors
+	.map((name) => allAuthors.find((author) => author.slug === name))
+	.filter((author) => !!author)
+const rendered = showBody
+	? await render((await getEntry('posts', post.slug))!)
+	: null
+const Content = rendered?.Content
+const toc = showBody ? post.toc : undefined
+const og = `/og/${post.slug}.png`
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: post.title,
+	datePublished: post.date.toISOString(),
+	dateModified: (post.lastmod || post.date).toISOString(),
+	description: post.summary,
+	image: site.socialBanner,
+	url: new URL(`blog/${post.slug}`, `${site.siteUrl}/`).href,
+	author: authors.map((author) => ({ '@type': 'Person', name: author.name })),
+}
+---
+
+<BaseLayout
+	title={post.title}
+	description={post.summary}
+	image={og}
+	canonical={post.canonicalUrl}
+	article={{
+		date: post.date,
+		lastmod: post.lastmod,
+		authors: authors.map((author) => author.name),
+	}}
+	noindex={post.private || post.draft}
+>
+	<script
+		type='application/ld+json'
+		set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')}
+	/>
+	<PostLayout
+		content={coreContent(post)}
+		authorDetails={authors}
+		prev={prev}
+		next={next}
+	>
+		<ArticleControls
+			slot='controls'
+			toc={toc}
+			client:load
+		/>
+		<Comments
+			slot='comments'
+			client:load
+		/>
+		{
+			toc && (
+				<div
+					slot='table-of-contents'
+					class='prose dark:prose-invert sticky top-0 h-screen overflow-y-auto text-sm [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'
+				>
+					<div class='pt-20 pb-8'>
+						<h2 class='not-prose ml-5 pb-2 text-lg text-slate-11 uppercase tracking-wide dark:text-slatedark-11'>
+							TOC
+						</h2>
+						<TOC
+							toc={toc}
+							client:load
+						/>
+					</div>
+				</div>
+			)
+		}
+		{
+			post.private && !unlocked ? (
+				post.password ? (
+					<PasswordForm
+						slug={post.slug}
+						client:load
+					/>
+				) : (
+					<p>该文章为私密且没有设置密码，不能给你看哦~</p>
+				)
+			) : (
+				Content && (
+					<div data-article-gallery>
+						<Content components={components} />
+					</div>
+				)
+			)
+		}
+	</PostLayout>
+</BaseLayout>

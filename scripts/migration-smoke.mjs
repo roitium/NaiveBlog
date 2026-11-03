@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { createHash } from 'node:crypto'
-import { existsSync, openSync, closeSync } from 'node:fs'
+import { createHash, createHmac } from 'node:crypto'
+import { existsSync, openSync, closeSync, copyFileSync } from 'node:fs'
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { startWorker } from './worker-test-server.mjs'
@@ -42,7 +42,12 @@ try {
 	)
 	await writeFile(
 		`${fixture}/private.mdx`,
-		`---\ntitle: Protected smoke test\ndate: '2026-11-02'\nprivate: true\npassword: '${password}'\ntags: [ProtectedSmokeTag]\n---\n## Private heading\n\n${secret}\n\n<GCPlay />\n`,
+		`---\ntitle: Protected smoke test\ndate: '2026-11-02'\nprivate: true\npassword: '${password}'\ntags: [ProtectedSmokeTag]\n---\n## Private heading\n\n${secret} $E=mc^2$.\n\n![Relative image](./fixture.png)\n\n\`\`\`ts\nconst privateAnswer = 42\n\`\`\`\n\n<GCPlay />\n`,
+	)
+	copyFileSync('public/static/images/logo.png', `${fixture}/fixture.png`)
+	await writeFile(
+		`${fixture}/other-private.mdx`,
+		`---\ntitle: Another protected post\ndate: '2026-11-02'\nprivate: true\npassword: '${password}'\n---\nother-private-body-marker-2981\n`,
 	)
 	await writeFile(
 		`${fixture}/draft.mdx`,
@@ -97,15 +102,16 @@ try {
 			'Astro smoke test',
 		),
 	)
-	const gate = await html('blog/__astro_smoke_test__/private')
-	assert(gate.includes('article-password'))
-	assert(gate.includes('noindex, nofollow'))
+	assert(!existsSync(`${output}/blog/__astro_smoke_test__/private/index.html`))
 	assert(!existsSync(`${output}/blog/__astro_smoke_test__/draft/index.html`))
 	for (const file of await files(output)) {
 		if (!/\.(?:html|js|json|xml|txt|map)$/.test(file)) continue
 		const text = await readFile(file, 'utf8')
 		for (const marker of [
 			secret,
+			'other-private-body-marker-2981',
+			JSON.parse(await readFile('src/generated/private-post-key.json', 'utf8'))
+				.key,
 			password,
 			'astro-draft-body-marker-2981',
 			createHash('sha256').update(password).digest('hex'),
@@ -135,6 +141,16 @@ try {
 			.get('content-security-policy')
 			?.includes("default-src 'self'"),
 	)
+	const privateURL = '/blog/__astro_smoke_test__/private'
+	const locked = await request(privateURL)
+	assert.equal(locked.status, 200)
+	assert.equal(locked.headers.get('cache-control'), 'private, no-store')
+	assert.equal(locked.headers.get('vary'), 'Cookie')
+	const gate = await locked.text()
+	assert(gate.includes('article-password'))
+	assert(gate.includes('noindex, nofollow'))
+	assert(!gate.includes(secret))
+	assert(!gate.includes('Private heading'))
 	const unlock = (body) =>
 		request('/api/blog/password', {
 			method: 'POST',
@@ -157,6 +173,7 @@ try {
 		401,
 	)
 	assert.equal((await unlock({})).status, 400)
+	assert.equal((await unlock(null)).status, 400)
 	const result = await unlock({
 		slug: '__astro_smoke_test__/private',
 		password,
@@ -164,9 +181,84 @@ try {
 	assert.equal(result.status, 200)
 	assert.equal(result.headers.get('cache-control'), 'private, no-store')
 	const data = await result.json()
-	assert(data.code.includes(secret))
-	assert(!JSON.stringify(data).includes(password))
-	assert.deepEqual(Object.keys(data).sort(), ['code', 'ok', 'toc'])
+	assert.deepEqual(data, { ok: true })
+	const setCookie = result.headers.get('set-cookie')
+	assert(setCookie.includes('HttpOnly'))
+	assert(setCookie.includes('SameSite=Lax'))
+	assert(setCookie.includes(`Path=${base}/blog/`))
+	assert(setCookie.includes('Max-Age=604800'))
+	const cookie = setCookie.split(';')[0]
+	const signingKey = JSON.parse(
+		await readFile('src/generated/private-post-key.json', 'utf8'),
+	).key
+	const makeToken = (slug, articlePassword, expires) =>
+		`${expires}.${createHmac('sha256', signingKey)
+			.update(JSON.stringify([slug, articlePassword, String(expires)]))
+			.digest('hex')}`
+
+	const authenticated = await request(privateURL, {
+		headers: { Cookie: cookie },
+	})
+	assert.equal(authenticated.status, 200)
+	assert.equal(authenticated.headers.get('cache-control'), 'private, no-store')
+	const unlocked = await authenticated.text()
+	assert(unlocked.includes(secret))
+	assert(unlocked.includes('id="private-heading"'))
+	assert(unlocked.includes('class="katex"'))
+	assert(unlocked.includes('data-copy-code'))
+	assert(unlocked.includes('gc.'))
+	assert(unlocked.includes('alt="Relative image"'))
+	assert(!unlocked.includes('article-password'))
+	assert(!unlocked.includes(password))
+	const imageURL = unlocked.match(
+		/<img[^>]*src="([^"]+)"[^>]*alt="Relative image"/,
+	)?.[1]
+	assert(imageURL, 'Native relative image was not rendered')
+	const imageResponse = await fetch(new URL(imageURL, worker.origin))
+	assert.equal(imageResponse.status, 200)
+	// A signature belongs to one article, even when two articles share a password.
+	const otherUnlock = await unlock({
+		slug: '__astro_smoke_test__/other-private',
+		password,
+	})
+	const otherCookieName = otherUnlock.headers.get('set-cookie').split('=')[0]
+	const other = await request('/blog/__astro_smoke_test__/other-private', {
+		headers: { Cookie: `${otherCookieName}=${cookie.split('=')[1]}` },
+	})
+	assert(!(await other.text()).includes('other-private-body-marker-2981'))
+	const tampered = cookie.slice(0, -1) + (cookie.endsWith('0') ? '1' : '0')
+	assert(
+		!(
+			await (
+				await request(privateURL, { headers: { Cookie: tampered } })
+			).text()
+		).includes(secret),
+	)
+	const cookieName = cookie.split('=')[0]
+	const expired = `${cookieName}=${makeToken('__astro_smoke_test__/private', password, 1000000000)}`
+	assert(
+		!(
+			await (await request(privateURL, { headers: { Cookie: expired } })).text()
+		).includes(secret),
+	)
+	const oldPassword = `${cookieName}=${makeToken('__astro_smoke_test__/private', 'previous-password', Math.floor(Date.now() / 1000) + 3600)}`
+	assert(
+		!(
+			await (
+				await request(privateURL, { headers: { Cookie: oldPassword } })
+			).text()
+		).includes(secret),
+	)
+	assert(!(await (await request(privateURL)).text()).includes(secret))
+	const foreignOrigin = await request('/api/blog/password', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Origin: 'https://example.invalid',
+		},
+		body: JSON.stringify({ slug: '__astro_smoke_test__/private', password }),
+	})
+	assert.equal(foreignOrigin.status, 403)
 	assert.equal((await request('/api/blog/password')).status, 404)
 	for (const [old, target] of [
 		['/archive.html', '/blog'],
@@ -215,14 +307,6 @@ try {
 } finally {
 	await worker?.stop()
 	await rm(fixture, { recursive: true, force: true })
-	// Do not leave test passwords or compiled test bodies in generated server data.
-	const generated = 'src/generated/private-posts.json'
-	if (existsSync(generated)) {
-		const posts = JSON.parse(await readFile(generated, 'utf8'))
-		for (const slug of Object.keys(posts))
-			if (slug.startsWith('__astro_smoke_test__/')) delete posts[slug]
-		await writeFile(generated, JSON.stringify(posts))
-	}
 	// Test builds must never be mistaken for deployable site output.
 	await rm('dist', { recursive: true, force: true })
 }

@@ -1,13 +1,53 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import NotFound from '@/components/NotFound'
+import ArticlePage from '@/layouts/ArticlePage.astro'
+import { allPosts } from '@/services/content/core'
+import { isPostUnlocked, unlockCookieName } from '@/services/private-post-auth'
+import { withoutBase } from '@/utils/paths'
 // Historical paths are redirected by middleware; all others retain a real 404.
 export const prerender = false
-Astro.response.status = 404
+const path = withoutBase(Astro.url.pathname).replace(/\/$/, '')
+let slug = ''
+try {
+	slug = decodeURIComponent(path.slice('/blog/'.length))
+} catch {
+	/* Malformed URL paths remain 404s. */
+}
+const post = path.startsWith('/blog/')
+	? allPosts.find(
+			(entry) =>
+				entry.slug === slug &&
+				entry.private &&
+				(!import.meta.env.PROD || !entry.draft),
+		)
+	: undefined
+const unlocked =
+	post &&
+	isPostUnlocked(
+		post.slug,
+		post.password,
+		Astro.cookies.get(unlockCookieName(post.slug))?.value,
+	)
+if (post) {
+	Astro.response.headers.set('Cache-Control', 'private, no-store')
+	Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+	Astro.response.headers.set('Vary', 'Cookie')
+} else Astro.response.status = 404
 ---
 
-<BaseLayout
-	title='404'
-	noindex
-	><NotFound /></BaseLayout
->
+{
+	post ? (
+		<ArticlePage
+			post={post}
+			unlocked={unlocked}
+		/>
+	) : (
+		<BaseLayout
+			title='404'
+			noindex
+		>
+			<NotFound />
+		</BaseLayout>
+	)
+}

@@ -6,7 +6,7 @@ import cloudflare from '@astrojs/cloudflare'
 import { loadEnv } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import { unified } from '@astrojs/markdown-remark'
-import privateContent from './src/integrations/private-content.ts'
+import privatePostAuth from './src/integrations/private-post-auth.ts'
 import { remarkImgToJsx } from './src/mdx-plugins/remark-img-to-jsx.ts'
 import { remarkPlugins, rehypePlugins } from './src/mdx-plugins/config.ts'
 
@@ -53,7 +53,13 @@ export default defineConfig({
 		prerenderEnvironment: 'node',
 	}),
 	session: false,
-	integrations: [privateContent(), react(), mdx()],
+	integrations: [
+		privatePostAuth(
+			env.PRIVATE_POST_COOKIE_SECRET || process.env.PRIVATE_POST_COOKIE_SECRET,
+		),
+		react(),
+		mdx(),
+	],
 	markdown: {
 		syntaxHighlight: false,
 		processor: unified({
